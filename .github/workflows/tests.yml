@@ -5,7 +5,7 @@
 # found two days later by whoever pulls next. This finds it before the merge.
 #
 # The tests use the scripted fake LLM, not Ollama, so no GPU and no model
-# download is needed. They do need Data/db/chinook_1.db, which is committed
+# download is needed. They do need data/db/chinook_1.db, which is committed
 # for exactly this reason — see .gitignore.
 
 name: tests
@@ -40,8 +40,8 @@ jobs:
         # A clearer failure than 20 confusing SQL errors if the ignore rules
         # get "tidied up" and chinook_1.db stops being committed.
         run: |
-          test -f Data/db/chinook_1.db \
-            || { echo "::error::Data/db/chinook_1.db is missing. It must stay committed — see .gitignore."; exit 1; }
+          test -f data/db/chinook_1.db \
+            || { echo "::error::data/db/chinook_1.db is missing. It must stay committed — see .gitignore."; exit 1; }
 
       - name: Run tests
         run: pytest -q

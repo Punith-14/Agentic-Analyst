@@ -22,8 +22,8 @@ from outside the step entirely and is what early stopping actually needs. Both
 are written; the notebook explains the choice.
 
 WHICH FILES GET USED
-  Data/trajectories/2026-08-15-train.jsonl        1,620 runs -> 5,461 steps
-  Data/trajectories/2026-08-15-superseded.jsonl      80 runs -> skipped
+  data/trajectories/2026-08-15-train.jsonl        1,620 runs -> 5,461 steps
+  data/trajectories/2026-08-15-superseded.jsonl      80 runs -> skipped
 
 The superseded batch predates four fixes (full schema in get_schema, a worked
 example in the prompt, loop detection, max_steps 8->12) and solved 9.2% against

@@ -53,7 +53,7 @@ scripts/
 notebooks/
   01_dataset_exploration.ipynb
   02_critic_models.ipynb  EDA, tuning, evaluation — outputs kept on purpose
-Data/
+data/
   db/                     3 SQLite databases, committed
   tasks/                  the 150-question suite, committed
   trajectories/           1,700 logged runs, committed — see below
@@ -78,11 +78,11 @@ That is the whole setup. **You do not need the Spider download** — the three
 databases and the task suite are committed, so a clone is immediately runnable.
 
 Only rebuild the data if you want to change the question set. That needs the
-1.8 GB Spider archive extracted to `Data/spider_data`:
+1.8 GB Spider archive extracted to `data/spider_data`:
 
 ```bash
-python data_prep/prepare_spider.py --spider-dir Data/spider_data --list
-python data_prep/prepare_spider.py --spider-dir Data/spider_data \
+python data_prep/prepare_spider.py --spider-dir data/spider_data --list
+python data_prep/prepare_spider.py --spider-dir data/spider_data \
     --dbs formula_1,college_2 --holdout chinook_1 --n 120 --n-holdout 30
 ```
 
@@ -125,7 +125,7 @@ JSON but measurably worse decisions on small models. The parser handles free
 text instead and records its failures.
 
 **Trajectory logs are training data.** Three of the four ML components in the
-project train on them. `Data/trajectories/*.jsonl` is append-only and must not
+project train on them. `data/trajectories/*.jsonl` is append-only and must not
 be deleted — the runs were sampled at temperature 0.7 and cannot be reproduced.
 
 **Keep the two trajectory files separate.** ⚠️ Merging them will bite you
