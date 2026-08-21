@@ -37,13 +37,27 @@ __pycache__/
 data/spider_data/
 Data/spider_data/
 
-# --- scratch databases & charts --------------------------------------
+# --- generated databases & charts ------------------------------------
 # The three Spider databases ARE committed (see the bottom of this file).
-# This catches anything else that appears in the folder.
+# These two are not: create_db.py builds them, and tools/sql_tools.py calls
+# it automatically through _ensure_db_exists() when they are missing.
+# Verified — delete both, make one run_sql() call, and they come back.
+data/db/analytics.db
+data.db
 *.sqlite
 *.db-journal
 *.db-wal
 data/charts/*.png
+
+# --- demo trajectories -------------------------------------------------
+# demo_workflow.py and the UI write synthetic runs against analytics.db
+# into data/trajectories/, named plain YYYY-MM-DD.jsonl. They are
+# regenerable, and they must never be confused with the real Spider runs.
+#
+# This bit matters: label_dataset.py reads *-train.jsonl only, so demo
+# output cannot reach the critic's training set even if someone commits it
+# anyway. The rule below is the second line of defence, not the first.
+data/trajectories/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].jsonl
 
 # --- large model weights ---------------------------------------------
 # The critic is small and committed. These are the LLM weights, which

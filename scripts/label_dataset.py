@@ -22,15 +22,24 @@ from outside the step entirely and is what early stopping actually needs. Both
 are written; the notebook explains the choice.
 
 WHICH FILES GET USED
-  data/trajectories/2026-08-15-train.jsonl        1,620 runs -> 5,461 steps
-  data/trajectories/2026-08-15-superseded.jsonl      80 runs -> skipped
+  data/trajectories/*-train.jsonl        labelled
+  everything else in that folder         ignored
 
-The superseded batch predates four fixes (full schema in get_schema, a worked
-example in the prompt, loop detection, max_steps 8->12) and solved 9.2% against
-the current 30.9%. It is skipped by MATCHING THE FILENAME, because every run
-generated before the provenance fix records the same context_policy string —
-nothing inside the record distinguishes it. Rename that file and the bad runs
-silently rejoin the training set.
+This is deliberately opt-in. It used to glob *.jsonl and skip a list of bad
+names, and that failed the first time it was tested for real: the UI
+walkthrough wrote 33 synthetic runs against a demo database into the same
+folder, and they would have been labelled and merged into the training set
+without a word. An allow-list can't fail that way.
+
+  -train.jsonl        1,620 runs -> 5,461 steps, the critic's training data
+  -superseded.jsonl      80 runs -> pre-fix config, 9.2% solve rate vs 30.9%,
+                                    kept as before/after evidence
+  everything else        demo output, other layers, scratch
+
+The superseded batch also can't be identified from its contents: every run
+generated before the provenance fix records the same context_policy string.
+The filename is the only signal, which is the second reason this is an
+allow-list rather than a deny-list.
 """
 
 from __future__ import annotations
@@ -109,10 +118,15 @@ def flatten(run: RunRecord) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", type=Path, default=DEFAULT_DIR)
-    ap.add_argument("--pattern", default="*.jsonl")
+    # OPT-IN, not opt-out. This used to be "*.jsonl" with an exclude list,
+    # which meant anything dropped into data/trajectories/ silently joined the
+    # training set — and it happened: 33 synthetic demo runs from the UI
+    # walkthrough landed there. Name the files you want; ignore everything else.
+    ap.add_argument("--pattern", default="*-train.jsonl",
+                    help="only files matching this are labelled")
     ap.add_argument("--exclude", nargs="*", default=["superseded"],
-                    help="filename fragments to skip — runs from a superseded "
-                         "agent config, whose failure modes no longer occur")
+                    help="filename fragments to skip even if they match "
+                         "--pattern; belt and braces")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
