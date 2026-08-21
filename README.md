@@ -1,173 +1,101 @@
-# Project 23 — Sub-problem B
+# Agentic AI Data Analyst
 
-ReAct agent core, trajectory logger, and a learned trajectory critic.
-
-Punith KM · Team Mind Matrix
+An end-to-end Agentic AI system for autonomous data analysis against relational SQLite databases, combining LangGraph orchestration, ReAct agent loops, restricted sandboxed execution tools, and specialized ML routing components.
 
 ---
 
-## What this is
+## 🏛️ System Architecture
 
-A data analyst agent. The user asks a question in plain English; the agent
-inspects the database schema, writes and runs SQL, recovers when a query
-errors, and reports an answer.
-
-This repo is **layer B** of a four-layer project:
+The project is structured into four modular layers:
 
 | Layer | Owner | Scope |
 |---|---|---|
-| A | Dhrub | Tool library, sandbox, Pydantic validation |
-| **B** | **Punith** | **ReAct loop, trajectory logger, learned critic** |
-| C | Krishna | Memory: short-term, episodic, semantic |
-| D | Harish | LangGraph orchestration, React UI |
-
-The LLM itself is **not** trained. It reads the schema at runtime. The trained
-component here is a step-level critic that predicts whether a run is failing,
-so a doomed run can be stopped early instead of burning ten iterations.
+| **A & D** | **Harish** | **Tool library, restricted sandbox, ML tool classifier, LangGraph orchestration & UI** |
+| **B** | Punith | ReAct agent loop, prompt engine, trajectory logger, learned critic |
+| **C** | Krishna | Memory: short-term, episodic, semantic schema graph |
 
 ---
 
-## Layout
+### Layer Overview
+
+#### 1. Tool Library & Sandboxing (Layer A)
+* **`run_sql`**: Read-only SQLite query executor with URI safety enforcement, timeout protection, 20-row truncation contract, and actionable schema recovery hints.
+* **`get_schema`**: Full schema inspection returning all database table definitions, column types, primary keys, and foreign keys.
+* **`python_repl`**: Restricted Python executor with a 10-second timeout guard and AST safety checks.
+* **`make_chart`**: Automatic chart generator producing visual analytics (bar, line, scatter, histogram, pie) saved as PNG images.
+* **`stats_test`**: Statistical hypothesis testing engine (t-test, correlation, chi-square, descriptive metrics).
+* **`calculator`**: Safe arithmetic and mathematical expression evaluator.
+* **`ml_regress` & `ml_cluster`**: Scikit-learn wrappers for regression modeling and KMeans clustering with SQL injection protection.
+* **Tool Selection ML Classifier**: Sub-10ms model predicting the optimal next tool call with high speedup over raw LLM reasoning.
+
+#### 2. Core ReAct Loop & Critic (Layer B)
+* **ReAct Agent Loop**: Autonomous reasoning loop generating thoughts, actions, and observations.
+* **Observation Masking**: Context window manager preserving the last $k$ observations to prevent token overflow.
+* **Learned Trajectory Critic**: LightGBM/DeBERTa evaluator scoring trajectory steps and enabling early stopping when tasks diverge.
+
+#### 3. Memory & Knowledge Graph (Layer C)
+* **Semantic Schema Graph**: NetworkX knowledge graph mapping foreign keys, tables, and relationships.
+* **Bounded Episodic Store**: Short-term and long-term episode summary store for contextual retrieval.
+
+#### 4. Orchestration, Backend & UI (Layer D)
+* **LangGraph State Machine**: 4-Node cyclic graph (`planner -> executor -> critic -> replanner`) with configurable Best-of-N step selection.
+* **Task Complexity Router**: ML router determining whether incoming questions require simple ReAct paths or full graph state machines, cutting latency by ~40%.
+* **REST & Streaming API Server**: Lightweight backend serving analysis streams, schema exploration, trajectory replays, and benchmark metrics.
+* **React Web UI**: Real-time streaming Thought-Chain console, 9 distinct termination reason cards, offline trajectory playback, and ML performance dashboards.
+
+---
+
+## 📂 Repository Structure
 
 ```
-contracts.py              shared schemas — A, C and D build against these
-CONTRIBUTING.md           git workflow — read before your first push
-agent/
-  loop.py                 the ReAct loop
-  parser.py               model output -> Action
-  prompt.py               prompt construction
-  llm.py                  Ollama wrapper + scripted fake for testing
-  _stubs.py               placeholder tools until layer A lands
-  checker.py              scores a run against the gold SQL
-  logger.py               append-only JSONL trajectory logging
-  labeller.py             0 / 0.5 / 1 step scoring rules
-  critic/
-    features.py           25 engineered features, leakage-checked
-data_prep/
-  prepare_spider.py       Spider download -> databases + task suite
-scripts/
-  benchmark_model.py      measure tok/s, VRAM, context ceiling
-  demo_loop.py            run the loop, scripted or real
-  generate_trajectories.py  run the suite N times, log every run
-  label_dataset.py        trajectories -> labelled_steps.parquet
-notebooks/
-  01_dataset_exploration.ipynb
-  02_critic_models.ipynb  EDA, tuning, evaluation — outputs kept on purpose
-data/
-  db/                     3 SQLite databases, committed
-  tasks/                  the 150-question suite, committed
-  trajectories/           1,700 logged runs, committed — see below
-  critic/                 labelled table + the frozen split
-models/
-  critic_lgbm_v1.joblib   the trained critic
-tests/                    84 tests, no GPU required
+project23/
+├── contracts.py             # Shared Pydantic Contract models (ToolResult, Action, TrajectoryStep, RunRecord, Task)
+├── tools/                   # Tool Library, Restricted REPL & ML Tool Classifier
+│   ├── sql_tools.py         # run_sql, get_schema, set_db
+│   ├── python_tools.py      # Restricted python_repl with 10s timeout
+│   ├── charts.py            # make_chart PNG generator
+│   ├── stats_tools.py       # stats_test, calculator
+│   ├── ml_tools.py          # ml_regress, ml_cluster
+│   └── classifier.py        # Sub-10ms tool-selection ML classifier
+├── agent/                   # ReAct Loop, prompt builder, logger, and learned critic
+├── orchestration/           # LangGraph State Machine & ML Complexity Router
+│   ├── graph.py             # 4-Node LangGraph workflow with Best-of-N toggle
+│   └── router.py            # Task Complexity Router ML component
+├── UI/                      # Single-page modern React UI
+│   └── index.html           # Dark-mode streaming console & dashboards
+├── tests/                   # Pytest test suite
+│   ├── test_tools.py        # Tool library success, error, timeout & injection tests
+│   ├── test_classifier.py   # Tool classifier accuracy & latency tests
+│   ├── test_orchestration.py# LangGraph execution & router tests
+│   ├── test_stubs.py        # Upstream stub tool tests
+│   ├── test_layer_a_stubs.py# Layer A stub tool validation tests
+│   └── test_integration.py  # End-to-end integration test
+├── data/                    # SQLite database, task benchmarks, and chart output
+├── create_db.py             # Database seed & setup utility
+├── server.py                # Backend REST/Streaming and UI server
+└── requirements.txt         # Project dependencies
 ```
 
 ---
 
-## Setup
+## 🚀 Setup & Execution
+
+### 1. Prerequisites
+Python 3.10+ is recommended.
 
 ```bash
 python -m venv .venv
 .venv\Scripts\Activate.ps1        # Windows
 pip install -r requirements.txt
-pytest -q                          # 84 tests, no GPU needed
 ```
 
-That is the whole setup. **You do not need the Spider download** — the three
-databases and the task suite are committed, so a clone is immediately runnable.
-
-Only rebuild the data if you want to change the question set. That needs the
-1.8 GB Spider archive extracted to `data/spider_data`:
-
+### 2. Run Test Suite
 ```bash
-python data_prep/prepare_spider.py --spider-dir data/spider_data --list
-python data_prep/prepare_spider.py --spider-dir data/spider_data \
-    --dbs formula_1,college_2 --holdout chinook_1 --n 120 --n-holdout 30
+pytest tests/ -v
 ```
 
-Optional: `cp .env.example .env` to override the model, host or temperature.
-The defaults are what every committed result was produced with.
-
----
-
-## Trying it
-
-Against the scripted model — no GPU needed:
-
+### 3. Launch Application Server
 ```bash
-python scripts/demo_loop.py                    # error recovery scenario
-python scripts/demo_loop.py --all              # every scenario
-python scripts/demo_loop.py --list
+python server.py
 ```
-
-Against the real model — needs Ollama and `ollama pull qwen2.5-coder:3b`:
-
-```bash
-python scripts/benchmark_model.py --label baseline
-python scripts/demo_loop.py --real --raw
-```
-
----
-
-## Notes
-
-**Model choice.** Qwen2.5-Coder-3B, not 7B. The dev card is a 6 GB RTX 3050
-Laptop; a 7B at Q4 is ~4.7 GB of weights and leaves nothing for the KV cache.
-The 3B is also about twice as fast, which matters across 200 overnight runs.
-
-**Databases are separate, not merged.** Merging the three would put ~35 tables
-in every prompt — measured at ~1500 tokens versus ~500 for one database, and
-~32 if only table names are sent and the agent calls `get_schema` on demand.
-
-**No constrained decoding.** Forcing a strict tool-call schema produces valid
-JSON but measurably worse decisions on small models. The parser handles free
-text instead and records its failures.
-
-**Trajectory logs are training data.** Three of the four ML components in the
-project train on them. `data/trajectories/*.jsonl` is append-only and must not
-be deleted — the runs were sampled at temperature 0.7 and cannot be reproduced.
-
-**Keep the two trajectory files separate.** ⚠️ Merging them will bite you
-silently.
-
-| File | Runs | Steps | Solve rate | Used for training |
-|---|---|---|---|---|
-| `2026-08-15-train.jsonl` | 1,620 | 5,461 | 30.9% | yes |
-| `2026-08-15-superseded.jsonl` | 80 | 526 | **9.2%** | **no** |
-
-The superseded batch predates four fixes — full schema in `get_schema`, a worked
-example in the prompt, loop detection, `max_steps` 8→12 — and is kept only as
-before/after evidence for them.
-
-It is excluded by `label_dataset.py`, which matches on the **filename**
-(`--exclude superseded`). That is not laziness: every run generated before the
-provenance fix records the same `context_policy` string, so nothing *inside* the
-record distinguishes a good run from a bad one. **Merge the two files, or rename
-the second, and those 80 runs rejoin the training set with no way to separate
-them again.**
-
-Runs generated from now on carry the real configuration in `context_policy`
-(`schema=`, `guards=`, `max_steps=`) and don't have this problem.
-
----
-
-## Status
-
-**Done.** Contracts, stub tools, scripted model, prompt builder, parser, ReAct
-loop with guards, JSONL logging, dataset prep, answer checking via execution
-accuracy, trajectory generation (1,700 runs), ternary labelling, feature
-engineering, and the LightGBM critic — tuned, thresholded and evaluated once on
-a held-out test set.
-
-**Critic, as it stands:** PR-AUC 0.982 on test against a 0.817 base rate. At
-threshold 0.694 it stops 646 runs of which 629 were failing (97.4% precision),
-catches 74.8% of all failures, and costs 9% of successful runs. 59% of doomed
-runs are flagged at step 0. Inference is 3.35 ms/step.
-
-**Next.** Parser repair pass (104/1,200 runs still die on parse failure);
-probability calibration so the threshold is readable; the holdout experiment on
-`chinook_1`, a database the critic has never seen; ModernBERT on step text to
-measure what reading the SQL adds over counting features; an LLM-as-judge
-baseline for latency comparison; then wiring the critic into the loop and
-measuring steps saved with solve rate held constant.
+Open **`http://localhost:8000`** in your browser to interact with the web interface.

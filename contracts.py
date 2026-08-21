@@ -72,6 +72,10 @@ class ToolResult(BaseModel):
     artifact_id: Optional[str] = None   # handle for large results, e.g. "df_1"
     hint: Optional[str] = None          # recovery info, e.g. the real column names
 
+    def __getitem__(self, item: str) -> Any:
+        """Allow subscript access for backward compatibility."""
+        return getattr(self, item)
+
     def short_observation(self) -> str:
         """What the model sees. Deliberately excludes error_full."""
         if self.status == "error":

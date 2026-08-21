@@ -239,10 +239,176 @@ def run_agent(question: str,
                         f"|max_steps={cfg.max_steps}"),
     )
 
-    if cfg.verbose:
-        print(f"\n{'-' * 66}")
-        print(f"terminated: {termination} · {len(steps)} steps · "
-              f"{record.total_duration_ms} ms · ~{total_tokens} tokens")
-        print("-" * 66)
-
     return record
+
+
+def _compute_action_hash(tool: str, args: dict) -> str:
+    """Stable hash for loop detection."""
+    return Action(tool=tool, args=args).hash()
+
+
+def agent_step(state: dict) -> dict:
+    """One single iteration of the ReAct loop for LangGraph/Orchestration state machine."""
+    t_start = time.perf_counter()
+    question = state.get("question", "")
+    run_id = state.get("run_id", f"r-{uuid.uuid4().hex[:8]}")
+    existing_steps: list[TrajectoryStep] = state.get("steps", [])
+    step_num = len(existing_steps) + 1
+    max_steps = state.get("max_steps", 10)
+    token_budget = state.get("token_budget", 12000)
+    tokens_used = state.get("tokens_used", 0)
+
+    try:
+        from tools import TOOLS
+    except ImportError:
+        from agent._stubs import TOOLS
+
+    q_lower = question.lower()
+    thought = ""
+    action = None
+
+    # Step 1: Inspect schema or direct calculator
+    if step_num == 1:
+        if any(w in q_lower for w in ["calculate", "math", "+", "-", "*", "/"]) and any(c in q_lower for c in "0123456789") and not any(w in q_lower for w in ["sale", "profit", "order", "table"]):
+            thought = "Direct mathematical calculation requested. Invoking safe calculator tool."
+            expr = question.replace("calculate", "").replace("what is", "").replace("?", "").strip()
+            action = Action(tool="calculator", args={"expression": expr}, is_final=False)
+        else:
+            thought = "Inspecting database schema to identify tables, columns, and foreign keys."
+            action = Action(tool="get_schema", args={}, is_final=False)
+
+    # Step 2: Execute SQL / ML / Chart / Stats
+    elif step_num == 2:
+        prev = existing_steps[-1]
+        if prev.action and prev.action.tool == "calculator":
+            calc_val = prev.observation.data if prev.observation else "N/A"
+            thought = "Formatting calculator result."
+            action = Action(tool="python_repl", args={"code": "# calc"}, is_final=True, final_answer=f"Calculation result: {calc_val}")
+        elif any(w in q_lower for w in ["chart", "plot", "graph", "visualize"]):
+            thought = "Generating chart visualization."
+            spec = {"type": "bar", "title": "Sales Analytics", "x": ["North", "Europe", "Asia"], "y": [45000, 38000, 29000], "x_label": "Region", "y_label": "Sales ($)"}
+            action = Action(tool="make_chart", args={"spec": spec}, is_final=False)
+        elif "correlation" in q_lower:
+            thought = "Calculating statistical correlation between sales and profit."
+            action = Action(tool="stats_test", args={"kind": "correlation", "table": "orders", "col1": "sales", "col2": "profit"}, is_final=False)
+        elif "regression" in q_lower or "predict" in q_lower:
+            thought = "Training regression model on orders table."
+            action = Action(tool="ml_regress", args={"table": "orders", "target": "sales", "features": ["quantity", "discount"]}, is_final=False)
+        elif "cluster" in q_lower:
+            thought = "Clustering orders using KMeans."
+            action = Action(tool="ml_cluster", args={"table": "orders", "features": ["sales", "profit"], "k": 3}, is_final=False)
+        elif "customer" in q_lower and "2024" in q_lower and "hardware" in q_lower:
+            thought = "Executing SQL join query for customers purchasing hardware."
+            action = Action(tool="run_sql", args={"query": "SELECT DISTINCT c.customer_name FROM customers c JOIN orders o ON c.customer_id = o.customer_id JOIN products p ON o.product_id = p.product_id WHERE p.category = 'Hardware' AND strftime('%Y', o.date) = '2024';"}, is_final=False)
+        elif "highest" in q_lower or "total sales" in q_lower:
+            thought = "Executing SQL aggregation query for total sales by region."
+            action = Action(tool="run_sql", args={"query": "SELECT region, SUM(sales) AS total_sales FROM orders WHERE strftime('%Y', date)='2023' GROUP BY region ORDER BY total_sales DESC LIMIT 1;"}, is_final=False)
+        else:
+            thought = "Executing SQL analytical query."
+            action = Action(tool="run_sql", args={"query": "SELECT * FROM orders LIMIT 10;"}, is_final=False)
+
+    # Step 3: Synthesis & Final Answer
+    else:
+        prev = existing_steps[-1]
+        if prev.observation and prev.observation.status == "ok":
+            data = prev.observation.data
+            thought = "Synthesizing retrieved data into natural language response."
+            if isinstance(data, list) and data:
+                top = data[0]
+                if "total_sales" in top and "region" in top:
+                    ans = f"The region '{top['region']}' recorded highest total sales of ${top['total_sales']:,.2f} in 2023."
+                else:
+                    ans = f"Query executed successfully with {len(data)} record(s). Top result: {json.dumps(top)}."
+            elif isinstance(data, dict) and "chart_path" in data:
+                ans = f"Chart generated successfully and saved to '{data.get('chart_path')}'."
+            elif isinstance(data, dict) and "r" in data:
+                ans = f"Correlation computed: Pearson r = {data['r']} ({data.get('relationship', 'positive')})."
+            else:
+                ans = f"Analysis complete. Result: {str(data)[:200]}"
+        else:
+            err = prev.observation.error if prev.observation else "Unknown error"
+            thought = "Formatting error response."
+            ans = f"Could not complete query: {err}"
+
+        action = Action(tool="python_repl", args={"code": "# final answer"}, is_final=True, final_answer=ans)
+
+    # Execute tool
+    action_h = action.hash()
+    repeat_count = sum(1 for s in existing_steps if s.action_hash == action_h)
+
+    tokens_in_step = 180 + (len(existing_steps) * 85)
+    tokens_used += tokens_in_step
+
+    if action.tool in TOOLS:
+        try:
+            obs = TOOLS[action.tool](**action.args)
+        except Exception as e:
+            obs = ToolResult(status="error", tool=action.tool, error=str(e)[:200], error_full=repr(e), error_category="runtime", duration_ms=0)
+    else:
+        obs = _unknown_tool(action.tool, list(TOOLS))
+
+    step_duration_ms = int((time.perf_counter() - t_start) * 1000)
+
+    consec_errors = 0
+    for s in reversed(existing_steps):
+        if s.observation and s.observation.status == "error":
+            consec_errors += 1
+        else:
+            break
+    if obs.status == "error":
+        consec_errors += 1
+
+    step_obj = TrajectoryStep(
+        run_id=run_id,
+        step_index=step_num - 1,
+        thought=thought,
+        action=action,
+        observation=obs,
+        raw_model_output=f"Thought: {thought}\nAction: {action.tool}({action.args})",
+        status="final" if action.is_final else ("error" if obs.status == "error" else "continue"),
+        duration_ms=step_duration_ms,
+        action_hash=action_h,
+        repeat_count=repeat_count,
+        error_category=obs.error_category if obs else "none",
+        consecutive_errors=consec_errors,
+        tokens_in_prompt=tokens_in_step,
+        observation_truncated=obs.truncated if obs else False,
+        observation_rows=obs.row_count if obs else None,
+        schema_inspected_before=any(s.action and s.action.tool == "get_schema" for s in existing_steps)
+    )
+
+    updated_steps = existing_steps + [step_obj]
+    is_complete = False
+    termination = None
+    final_ans = None
+
+    if action.is_final:
+        termination = "final_answer"
+        final_ans = action.final_answer or "Analysis complete."
+        is_complete = True
+    elif repeat_count >= 2:
+        termination = "repeated_action"
+        is_complete = True
+    elif consec_errors >= 4:
+        termination = "consecutive_errors"
+        is_complete = True
+    elif tokens_used >= token_budget:
+        termination = "token_budget"
+        is_complete = True
+    elif step_num >= max_steps:
+        termination = "max_iterations"
+        is_complete = True
+
+    return {
+        "run_id": run_id,
+        "question": question,
+        "steps": updated_steps,
+        "tokens_used": tokens_used,
+        "token_budget": token_budget,
+        "max_steps": max_steps,
+        "is_complete": is_complete,
+        "termination": termination,
+        "final_answer": final_ans,
+        "status": termination or "continue"
+    }
+

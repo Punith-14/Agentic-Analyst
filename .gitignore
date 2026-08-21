@@ -37,12 +37,13 @@ __pycache__/
 data/spider_data/
 Data/spider_data/
 
-# --- scratch databases -----------------------------------------------
+# --- scratch databases & charts --------------------------------------
 # The three Spider databases ARE committed (see the bottom of this file).
 # This catches anything else that appears in the folder.
 *.sqlite
 *.db-journal
 *.db-wal
+data/charts/*.png
 
 # --- large model weights ---------------------------------------------
 # The critic is small and committed. These are the LLM weights, which
