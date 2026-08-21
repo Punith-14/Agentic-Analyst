@@ -1,0 +1,2314 @@
+[
+  {
+    "task_id": "t001",
+    "question": "What is the id and last name of the driver who participated in the most races after 2010?",
+    "gold_sql": "SELECT T1.driverid , T1.surname FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid WHERE T3.year > 2010 GROUP BY T1.driverid ORDER BY count(*) DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t002",
+    "question": "What are the ids and last names of all drivers who participated in the most races?",
+    "gold_sql": "SELECT T1.driverid , T1.surname FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid GROUP BY T1.driverid ORDER BY count(*) DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t003",
+    "question": "What is the maximum fastest lap speed in race named 'Monaco Grand Prix' in 2008 ?",
+    "gold_sql": "SELECT max(T2.fastestlapspeed) FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid WHERE T1.year = 2008 AND T1.name = \"Monaco Grand Prix\"",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t004",
+    "question": "What is the department name and corresponding building for the department with the greatest budget?",
+    "gold_sql": "SELECT dept_name , building FROM department ORDER BY budget DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t005",
+    "question": "Find the name of students who took any class in the years of 2009 and 2010.",
+    "gold_sql": "SELECT DISTINCT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE YEAR = 2009 OR YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t006",
+    "question": "What are the names of all the races that occurred in the year 2017?",
+    "gold_sql": "SELECT name FROM races WHERE YEAR = 2017",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t007",
+    "question": "What are the last names and ids of all drivers who had 11 pit stops and participated in more than 5 races?",
+    "gold_sql": "SELECT T1.surname , T1.driverid FROM drivers AS T1 JOIN pitstops AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) = 11 INTERSECT SELECT T1.surname , T1.driverid FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 5",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "subquery",
+      "setop",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t008",
+    "question": "What are the names of all races that occurred after 12:00:00 or before 09:00:00?",
+    "gold_sql": "SELECT name FROM races WHERE TIME > \"12:00:00\" OR TIME < \"09:00:00\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t009",
+    "question": "Find the names of the top 3 departments that provide the largest amount of courses?",
+    "gold_sql": "SELECT dept_name FROM course GROUP BY dept_name ORDER BY count(*) DESC LIMIT 3",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t010",
+    "question": "What are the forename and surname of the driver who has the smallest laptime?",
+    "gold_sql": "SELECT T1.forename , T1.surname FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid ORDER BY T2.milliseconds LIMIT 1",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t011",
+    "question": "List the information of all instructors ordered by their salary in ascending order.",
+    "gold_sql": "SELECT * FROM instructor ORDER BY salary",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t012",
+    "question": "What are the names of the instructors in the Comp. Sci. department who earn more than 80000?",
+    "gold_sql": "SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.' AND salary > 80000",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t013",
+    "question": "What is the title of the course with Differential Geometry as a prerequisite?",
+    "gold_sql": "SELECT title FROM course WHERE course_id IN (SELECT T1.course_id FROM prereq AS T1 JOIN course AS T2 ON T1.prereq_id = T2.course_id WHERE T2.title = 'Differential Geometry')",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t014",
+    "question": "What are the ids of instructors who didnt' teach?",
+    "gold_sql": "SELECT id FROM instructor EXCEPT SELECT id FROM teaches",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t015",
+    "question": "What are the names and salaries for instructors who earn less than the average salary of instructors in the Physics department?",
+    "gold_sql": "SELECT name , salary FROM instructor WHERE salary < (SELECT avg(salary) FROM instructor WHERE dept_name = 'Physics')",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t016",
+    "question": "What are the names of Art instructors who have taught a course, and the corresponding course id?",
+    "gold_sql": "SELECT name , course_id FROM instructor AS T1 JOIN teaches AS T2 ON T1.ID = T2.ID WHERE T1.dept_name = 'Art'",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t017",
+    "question": "What are the first names of all the different drivers in alphabetical order?",
+    "gold_sql": "SELECT DISTINCT forename FROM drivers ORDER BY forename ASC",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t018",
+    "question": "Find the id and surname of the driver who participated the most number of races?",
+    "gold_sql": "SELECT T1.driverid , T1.surname FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid GROUP BY T1.driverid ORDER BY count(*) DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t019",
+    "question": "Find the total budgets of the Marketing or Finance department.",
+    "gold_sql": "SELECT sum(budget) FROM department WHERE dept_name = 'Marketing' OR dept_name = 'Finance'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t020",
+    "question": "Count the number of distinct instructors who have taught a course.",
+    "gold_sql": "SELECT COUNT (DISTINCT id) FROM teaches",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t021",
+    "question": "What is the title of the course that was offered at building Chandler during the fall semester in the year of 2010?",
+    "gold_sql": "SELECT T1.title FROM course AS T1 JOIN SECTION AS T2 ON T1.course_id = T2.course_id WHERE building = 'Chandler' AND semester = 'Fall' AND YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t022",
+    "question": "What is the name of the race held most recently?",
+    "gold_sql": "SELECT name FROM races ORDER BY date DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t023",
+    "question": "Find the room number of the rooms which can sit 50 to 100 students and their buildings.",
+    "gold_sql": "SELECT building , room_number FROM classroom WHERE capacity BETWEEN 50 AND 100",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t024",
+    "question": "Show all titles and their instructors' names for courses in 2008, in alphabetical order by title.",
+    "gold_sql": "SELECT T1.title , T3.name FROM course AS T1 JOIN teaches AS T2 ON T1.course_id = T2.course_id JOIN instructor AS T3 ON T2.id = T3.id WHERE YEAR = 2008 ORDER BY T1.title",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t025",
+    "question": "How many students have advisors?",
+    "gold_sql": "SELECT count(DISTINCT s_id) FROM advisor",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t026",
+    "question": "What are the ids of courses without prerequisites?",
+    "gold_sql": "SELECT course_id FROM course EXCEPT SELECT course_id FROM prereq",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t027",
+    "question": "Give the name of the highest paid instructor.",
+    "gold_sql": "SELECT name FROM instructor ORDER BY salary DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t028",
+    "question": "What is the forename and surname of the driver with the shortest laptime?",
+    "gold_sql": "SELECT T1.forename , T1.surname FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid ORDER BY T2.milliseconds LIMIT 1",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t029",
+    "question": "What are all the different first names of the drivers who are in position as standing and won?",
+    "gold_sql": "SELECT DISTINCT T1.forename FROM drivers AS T1 JOIN driverstandings AS T2 ON T1.driverid = T2.driverid WHERE T2.position = 1 AND T2.wins = 1",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t030",
+    "question": "Find courses that ran in Fall 2009 or in Spring 2010.",
+    "gold_sql": "SELECT course_id FROM SECTION WHERE semester = 'Fall' AND YEAR = 2009 UNION SELECT course_id FROM SECTION WHERE semester = 'Spring' AND YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t031",
+    "question": "What are the names of students who have taken the prerequisite for the course International Finance?",
+    "gold_sql": "SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 4,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t032",
+    "question": "Count the number of students who have advisors.",
+    "gold_sql": "SELECT count(DISTINCT s_id) FROM advisor",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t033",
+    "question": "How many instructors teach a course in the Spring of 2010?",
+    "gold_sql": "SELECT COUNT (DISTINCT ID) FROM teaches WHERE semester = 'Spring' AND YEAR = 2010",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t034",
+    "question": "For each race name, What is the maximum fastest lap speed for races after 2004 ordered by year?",
+    "gold_sql": "SELECT max(T2.fastestlapspeed) , T1.name , T1.year FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid WHERE T1.year > 2014 GROUP BY T1.name ORDER BY T1.year",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t035",
+    "question": "Count the number of classrooms in Lamberton.",
+    "gold_sql": "SELECT count(*) FROM classroom WHERE building = 'Lamberton'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t036",
+    "question": "What are the names and years of all races that had a driver with the last name Lewis?",
+    "gold_sql": "SELECT T2.name , T2.year FROM results AS T1 JOIN races AS T2 ON T1.raceid = T2.raceid JOIN drivers AS T3 ON T1.driverid = T3.driverid WHERE T3.forename = \"Lewis\"",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t037",
+    "question": "Find the title of course that is provided by Statistics but not Psychology departments.",
+    "gold_sql": "SELECT title FROM course WHERE dept_name = 'Statistics' EXCEPT SELECT title FROM course WHERE dept_name = 'Psychology'",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t038",
+    "question": "What are the greatest and average capacity for rooms in each building?",
+    "gold_sql": "SELECT max(capacity) , avg(capacity) , building FROM classroom GROUP BY building",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t039",
+    "question": "How many courses are provided in each semester and year?",
+    "gold_sql": "SELECT count(*) , semester , YEAR FROM SECTION GROUP BY semester , YEAR",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t040",
+    "question": "What are the names and average salaries for departments with average salary higher than 42000?",
+    "gold_sql": "SELECT dept_name , AVG (salary) FROM instructor GROUP BY dept_name HAVING AVG (salary) > 42000",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t041",
+    "question": "Which year had the greatest number of courses?",
+    "gold_sql": "SELECT YEAR FROM SECTION GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t042",
+    "question": "What are the maximum fastest lap speed in races held after 2004 grouped by race name and ordered by year?",
+    "gold_sql": "SELECT max(T2.fastestlapspeed) , T1.name , T1.year FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid WHERE T1.year > 2014 GROUP BY T1.name ORDER BY T1.year",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t043",
+    "question": "How many different instructors have taught some course?",
+    "gold_sql": "SELECT COUNT (DISTINCT id) FROM teaches",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t044",
+    "question": "What is the name and building of the departments whose budget is more than the average budget?",
+    "gold_sql": "SELECT dept_name , building FROM department WHERE budget > (SELECT avg(budget) FROM department)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t045",
+    "question": "Find the title of courses that have two prerequisites?",
+    "gold_sql": "SELECT T1.title FROM course AS T1 JOIN prereq AS T2 ON T1.course_id = T2.course_id GROUP BY T2.course_id HAVING count(*) = 2",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t046",
+    "question": "Find the driver id and number of races of all drivers who have at most participated in 30 races?",
+    "gold_sql": "SELECT T1.driverid , count(*) FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid GROUP BY T1.driverid HAVING count(*) <= 30",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t047",
+    "question": "What is the id and last name of the driver who participated in the most races after 2010?",
+    "gold_sql": "SELECT T1.driverid , T1.surname FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid WHERE T3.year > 2010 GROUP BY T1.driverid ORDER BY count(*) DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t048",
+    "question": "Which department has the lowest budget?",
+    "gold_sql": "SELECT dept_name FROM department ORDER BY budget LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t049",
+    "question": "Find the id, forename and number of races of all drivers who have at least participated in two races?",
+    "gold_sql": "SELECT T1.driverid , T1.forename , count(*) FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid JOIN races AS T3 ON T2.raceid = T3.raceid GROUP BY T1.driverid HAVING count(*) >= 2",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t050",
+    "question": "Find the names and average salaries of all departments whose average salary is greater than 42000.",
+    "gold_sql": "SELECT dept_name , AVG (salary) FROM instructor GROUP BY dept_name HAVING AVG (salary) > 42000",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t051",
+    "question": "What are the numbers of races for each constructor id?",
+    "gold_sql": "SELECT count(*) , constructorid FROM constructorStandings GROUP BY constructorid",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t052",
+    "question": "What is the sum of budgets of the Marketing and Finance departments?",
+    "gold_sql": "SELECT sum(budget) FROM department WHERE dept_name = 'Marketing' OR dept_name = 'Finance'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t053",
+    "question": "What is the name and date of the most recent race?",
+    "gold_sql": "SELECT name , date FROM races ORDER BY date DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t054",
+    "question": "List the distinct names of the instructors, ordered by name.",
+    "gold_sql": "SELECT DISTINCT name FROM instructor ORDER BY name",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t055",
+    "question": "What is the id and family name of the driver who has the longest laptime?",
+    "gold_sql": "SELECT T1.driverid , T1.surname FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid ORDER BY T2.milliseconds DESC LIMIT 1",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t056",
+    "question": "What are the names of all the circuits that are in the UK or Malaysia?",
+    "gold_sql": "SELECT name FROM circuits WHERE country = \"UK\" OR country = \"Malaysia\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t057",
+    "question": "Find the total number of students in each department.",
+    "gold_sql": "SELECT count(*) , dept_name FROM student GROUP BY dept_name",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t058",
+    "question": "What is the name and date of the race that occurred most recently?",
+    "gold_sql": "SELECT name , date FROM races ORDER BY date DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t059",
+    "question": "List the names of all distinct races in reversed  lexicographic order?",
+    "gold_sql": "SELECT DISTINCT name FROM races ORDER BY name DESC",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t060",
+    "question": "Find all the distinct id and nationality of drivers who have had laptime more than 100000 milliseconds?",
+    "gold_sql": "SELECT DISTINCT T1.driverid , T1.nationality FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid WHERE T2.milliseconds > 100000",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t061",
+    "question": "Find courses that ran in Fall 2009 and in Spring 2010.",
+    "gold_sql": "SELECT course_id FROM SECTION WHERE semester = 'Fall' AND YEAR = 2009 INTERSECT SELECT course_id FROM SECTION WHERE semester = 'Spring' AND YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t062",
+    "question": "What are the drivers' last names and id who had 11 pit stops and participated in more than 5 race results?",
+    "gold_sql": "SELECT T1.surname , T1.driverid FROM drivers AS T1 JOIN pitstops AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) = 11 INTERSECT SELECT T1.surname , T1.driverid FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 5",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "subquery",
+      "setop",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t063",
+    "question": "What are the ids for courses that were offered in both Fall of 2009 and Spring of 2010?",
+    "gold_sql": "SELECT course_id FROM SECTION WHERE semester = 'Fall' AND YEAR = 2009 INTERSECT SELECT course_id FROM SECTION WHERE semester = 'Spring' AND YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t064",
+    "question": "What are the distinct salaries of all instructors who earned less than the maximum salary?",
+    "gold_sql": "SELECT DISTINCT salary FROM instructor WHERE salary < (SELECT max(salary) FROM instructor)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t065",
+    "question": "What is the title and credits of the course that is taught in the largest classroom (with the highest capacity)?",
+    "gold_sql": "SELECT T3.title , T3.credits FROM classroom AS T1 JOIN SECTION AS T2 ON T1.building = T2.building AND T1.room_number = T2.room_number JOIN course AS T3 ON T2.course_id = T3.course_id WHERE T1.capacity = (SELECT max(capacity) FROM classroom)",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t066",
+    "question": "Find names of instructors with salary greater than that of some (at least one) instructor in the Biology department.",
+    "gold_sql": "SELECT name FROM instructor WHERE salary > (SELECT min(salary) FROM instructor WHERE dept_name = 'Biology')",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t067",
+    "question": "Count the number of departments which offer courses.",
+    "gold_sql": "SELECT count(DISTINCT dept_name) FROM course",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t068",
+    "question": "What is the name of the department with an instructure who has a name like 'Soisalon'?",
+    "gold_sql": "SELECT dept_name FROM instructor WHERE name LIKE '%Soisalon%'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t069",
+    "question": "Find the name of students who took some course offered by Statistics department.",
+    "gold_sql": "SELECT T3.name FROM course AS T1 JOIN takes AS T2 ON T1.course_id = T2.course_id JOIN student AS T3 ON T2.id = T3.id WHERE T1.dept_name = 'Statistics'",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t070",
+    "question": "Count the number of rooms in Lamberton with capacity lower than 50.",
+    "gold_sql": "SELECT count(*) FROM classroom WHERE building = 'Lamberton' AND capacity < 50",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t071",
+    "question": "Who is the instructor with the highest salary?",
+    "gold_sql": "SELECT name FROM instructor ORDER BY salary DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t072",
+    "question": "What are the different names of all the races in reverse alphabetical order?",
+    "gold_sql": "SELECT DISTINCT name FROM races ORDER BY name DESC",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t073",
+    "question": "Find the name of instructors who are advisors of the students from the Math department, and sort the results by students' total credit.",
+    "gold_sql": "SELECT T2.name FROM advisor AS T1 JOIN instructor AS T2 ON T1.i_id = T2.id JOIN student AS T3 ON T1.s_id = T3.id WHERE T3.dept_name = 'Math' ORDER BY T3.tot_cred",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t074",
+    "question": "How many classrooms are not in Lamberton?",
+    "gold_sql": "SELECT count(*) FROM classroom WHERE building != 'Lamberton'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t075",
+    "question": "Find the name of instructor who is the advisor of the student who has the highest number of total credits.",
+    "gold_sql": "SELECT T2.name FROM advisor AS T1 JOIN instructor AS T2 ON T1.i_id = T2.id JOIN student AS T3 ON T1.s_id = T3.id ORDER BY T3.tot_cred DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t076",
+    "question": "What is the name of the student who has the highest total credits in the History department.",
+    "gold_sql": "SELECT name FROM student WHERE dept_name = 'History' ORDER BY tot_cred DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t077",
+    "question": "What are the ids and locations of all circuits in France or Belgium?",
+    "gold_sql": "SELECT circuitid , LOCATION FROM circuits WHERE country = \"France\" OR country = \"Belgium\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t078",
+    "question": "What is the name of the race that occurred most recently?",
+    "gold_sql": "SELECT name FROM races ORDER BY date DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t079",
+    "question": "What are the different ids and stop durations of all the drivers whose stop lasted longer than the driver in the race with the id 841?",
+    "gold_sql": "SELECT DISTINCT driverid , STOP FROM pitstops WHERE duration > (SELECT min(duration) FROM pitstops WHERE raceid = 841)",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t080",
+    "question": "What is the lowest salary in departments with average salary greater than the overall average.",
+    "gold_sql": "SELECT min(salary) , dept_name FROM instructor GROUP BY dept_name HAVING avg(salary) > (SELECT avg(salary) FROM instructor)",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "subquery",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t081",
+    "question": "What is the title, credit value, and department name for courses with more than one prerequisite?",
+    "gold_sql": "SELECT T1.title , T1.credits , T1.dept_name FROM course AS T1 JOIN prereq AS T2 ON T1.course_id = T2.course_id GROUP BY T2.course_id HAVING count(*) > 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t082",
+    "question": "Find the forename and surname of drivers whose nationality is German?",
+    "gold_sql": "SELECT forename , surname FROM drivers WHERE nationality = \"German\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t083",
+    "question": "What is the id, first name, and last name of the driver who was in the first position for laptime at least twice?",
+    "gold_sql": "SELECT T1.driverid , T1.forename , T1.surname FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid WHERE POSITION = '1' GROUP BY T1.driverid HAVING count(*) >= 2",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "filter",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t084",
+    "question": "Find the name of the courses that do not have any prerequisite?",
+    "gold_sql": "SELECT title FROM course WHERE course_id NOT IN (SELECT course_id FROM prereq)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t085",
+    "question": "What are the names of courses without prerequisites?",
+    "gold_sql": "SELECT title FROM course WHERE course_id NOT IN (SELECT course_id FROM prereq)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t086",
+    "question": "Find the name of instructors who are advising more than one student.",
+    "gold_sql": "SELECT T1.name FROM instructor AS T1 JOIN advisor AS T2 ON T1.id = T2.i_id GROUP BY T2.i_id HAVING count(*) > 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t087",
+    "question": "What are the names of the students who took classes in 2009 or 2010?",
+    "gold_sql": "SELECT DISTINCT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE YEAR = 2009 OR YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t088",
+    "question": "What are the names of instructors who advise more than one student?",
+    "gold_sql": "SELECT T1.name FROM instructor AS T1 JOIN advisor AS T2 ON T1.id = T2.i_id GROUP BY T2.i_id HAVING count(*) > 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t089",
+    "question": "What are the names of races held between 2009 and 2011?",
+    "gold_sql": "SELECT name FROM races WHERE YEAR BETWEEN 2009 AND 2011",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t090",
+    "question": "Find the name of the students and their department names sorted by their total credits in ascending order.",
+    "gold_sql": "SELECT name , dept_name FROM student ORDER BY tot_cred",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t091",
+    "question": "list in alphabetic order all course names and their instructors' names in year 2008.",
+    "gold_sql": "SELECT T1.title , T3.name FROM course AS T1 JOIN teaches AS T2 ON T1.course_id = T2.course_id JOIN instructor AS T3 ON T2.id = T3.id WHERE YEAR = 2008 ORDER BY T1.title",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t092",
+    "question": "Find the names of all instructors whose name includes the substring \u201cdar\u201d.",
+    "gold_sql": "SELECT name FROM instructor WHERE name LIKE '%dar%'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t093",
+    "question": "What are the forenames and surnames of drivers who participated in the races named Australian Grand Prix but not the races named Chinese Grand Prix?",
+    "gold_sql": "SELECT T3.forename , T3.surname FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid JOIN drivers AS T3 ON T2.driverid = T3.driverid WHERE T1.name = \"Australian Grand Prix\" EXCEPT SELECT T3.forename , T3.surname FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid JOIN drivers AS T3 ON T2.driverid = T3.driverid WHERE T1.name = \"Chinese Grand Prix\"",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 4
+  },
+  {
+    "task_id": "t094",
+    "question": "What are the unique names of all race held between 2014 and 2017?",
+    "gold_sql": "SELECT DISTINCT name FROM races WHERE YEAR BETWEEN 2014 AND 2017",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t095",
+    "question": "What are the names of the 3 departments with the most courses?",
+    "gold_sql": "SELECT dept_name FROM course GROUP BY dept_name ORDER BY count(*) DESC LIMIT 3",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t096",
+    "question": "What are the names of instructors who earn more than at least one instructor from the Biology department?",
+    "gold_sql": "SELECT name FROM instructor WHERE salary > (SELECT min(salary) FROM instructor WHERE dept_name = 'Biology')",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t097",
+    "question": "What is the course title of the prerequisite of course Mobile Computing?",
+    "gold_sql": "SELECT title FROM course WHERE course_id IN (SELECT T1.prereq_id FROM prereq AS T1 JOIN course AS T2 ON T1.course_id = T2.course_id WHERE T2.title = 'Mobile Computing')",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t098",
+    "question": "What are the drivers' first names,last names, and ids for all those that had more than 8 stops or participated in more than 5 races?",
+    "gold_sql": "SELECT T1.forename , T1.surname , T1.driverid FROM drivers AS T1 JOIN pitstops AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 8 UNION SELECT T1.forename , T1.surname , T1.driverid FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 5",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "subquery",
+      "setop",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t099",
+    "question": "What is the name of the instructor who advises the student with the greatest number of total credits?",
+    "gold_sql": "SELECT T2.name FROM advisor AS T1 JOIN instructor AS T2 ON T1.i_id = T2.id JOIN student AS T3 ON T1.s_id = T3.id ORDER BY T3.tot_cred DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t100",
+    "question": "What are the names of races held after 12:00:00 or before 09:00:00?",
+    "gold_sql": "SELECT name FROM races WHERE TIME > \"12:00:00\" OR TIME < \"09:00:00\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t101",
+    "question": "Find the name of the students who have more than one advisor?",
+    "gold_sql": "SELECT T1.name FROM student AS T1 JOIN advisor AS T2 ON T1.id = T2.s_id GROUP BY T2.s_id HAVING count(*) > 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t102",
+    "question": "What are the titles of courses without prerequisites?",
+    "gold_sql": "SELECT title FROM course WHERE course_id NOT IN (SELECT course_id FROM prereq)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t103",
+    "question": "How many drivers participated in the race Australian Grand Prix held in 2009?",
+    "gold_sql": "SELECT count(*) FROM results AS T1 JOIN races AS T2 ON T1.raceid = T2.raceid WHERE T2.name = \"Australian Grand Prix\" AND YEAR = 2009",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t104",
+    "question": "Find the maximum and average capacity among rooms in each building.",
+    "gold_sql": "SELECT max(capacity) , avg(capacity) , building FROM classroom GROUP BY building",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "groupby"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t105",
+    "question": "Give id of the instructor who advises students in the History department.",
+    "gold_sql": "SELECT i_id FROM advisor AS T1 JOIN student AS T2 ON T1.s_id = T2.id WHERE T2.dept_name = 'History'",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t106",
+    "question": "What is the average fastest lap speed for races held after 2004, for each race, ordered by year?",
+    "gold_sql": "SELECT avg(T2.fastestlapspeed) , T1.name , T1.year FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid WHERE T1.year > 2014 GROUP BY T1.name ORDER BY T1.year",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t107",
+    "question": "What are the names and buildings of the deparments, sorted by budget descending?",
+    "gold_sql": "SELECT dept_name , building FROM department ORDER BY budget DESC",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t108",
+    "question": "List the forenames of all distinct drivers in alphabetical order?",
+    "gold_sql": "SELECT DISTINCT forename FROM drivers ORDER BY forename ASC",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t109",
+    "question": "What are the drivers' first, last names and id who had more than 8 pit stops or participated in more than 5 race results?",
+    "gold_sql": "SELECT T1.forename , T1.surname , T1.driverid FROM drivers AS T1 JOIN pitstops AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 8 UNION SELECT T1.forename , T1.surname , T1.driverid FROM drivers AS T1 JOIN results AS T2 ON T1.driverid = T2.driverid GROUP BY T1.driverid HAVING count(*) > 5",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "subquery",
+      "setop",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 2
+  },
+  {
+    "task_id": "t110",
+    "question": "What is the id and first name of all the drivers who participated in the Australian Grand Prix and the Chinese Grand Prix?",
+    "gold_sql": "SELECT T2.driverid , T3.forename FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid JOIN drivers AS T3 ON T2.driverid = T3.driverid WHERE T1.name = \"Australian Grand Prix\" INTERSECT SELECT T2.driverid , T3.forename FROM races AS T1 JOIN results AS T2 ON T1.raceid = T2.raceid JOIN drivers AS T3 ON T2.driverid = T3.driverid WHERE T1.name = \"Chinese Grand Prix\"",
+    "difficulty": "hard",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 4
+  },
+  {
+    "task_id": "t111",
+    "question": "What are the names of instructors who didn't teach?",
+    "gold_sql": "SELECT name FROM instructor WHERE id NOT IN (SELECT id FROM teaches)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t112",
+    "question": "Find the id and location of circuits that belong to France or Belgium?",
+    "gold_sql": "SELECT circuitid , LOCATION FROM circuits WHERE country = \"France\" OR country = \"Belgium\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t113",
+    "question": "Find courses that ran in Fall 2009 but not in Spring 2010.",
+    "gold_sql": "SELECT course_id FROM SECTION WHERE semester = 'Fall' AND YEAR = 2009 EXCEPT SELECT course_id FROM SECTION WHERE semester = 'Spring' AND YEAR = 2010",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t114",
+    "question": "List the forename and surname of all distinct drivers who once had laptime less than 93000 milliseconds?",
+    "gold_sql": "SELECT DISTINCT T1.forename , T1.surname FROM drivers AS T1 JOIN laptimes AS T2 ON T1.driverid = T2.driverid WHERE T2.milliseconds < 93000",
+    "difficulty": "medium",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t115",
+    "question": "What is the first and last name of all the German drivers?",
+    "gold_sql": "SELECT forename , surname FROM drivers WHERE nationality = \"German\"",
+    "difficulty": "easy",
+    "db": "formula_1",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t116",
+    "question": "What are the names of all instructors in the Comp. Sci. department?",
+    "gold_sql": "SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.'",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t117",
+    "question": "Give the name of the student in the History department with the most credits.",
+    "gold_sql": "SELECT name FROM student WHERE dept_name = 'History' ORDER BY tot_cred DESC LIMIT 1",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "sort",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t118",
+    "question": "What are the names of students who have more than one advisor?",
+    "gold_sql": "SELECT T1.name FROM student AS T1 JOIN advisor AS T2 ON T1.id = T2.s_id GROUP BY T2.s_id HAVING count(*) > 1",
+    "difficulty": "hard",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "t119",
+    "question": "Find the salaries of all distinct instructors that are less than the largest salary.",
+    "gold_sql": "SELECT DISTINCT salary FROM instructor WHERE salary < (SELECT max(salary) FROM instructor)",
+    "difficulty": "medium",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "aggregation",
+      "filter",
+      "subquery"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "t120",
+    "question": "Find the names of all instructors in Comp. Sci. department with salary > 80000.",
+    "gold_sql": "SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.' AND salary > 80000",
+    "difficulty": "easy",
+    "db": "college_2",
+    "split": "main",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h001",
+    "question": "Please show the employee last names that serves no more than 20 customers.",
+    "gold_sql": "SELECT T1.LastName FROM CUSTOMER AS T1 JOIN EMPLOYEE AS T2 ON T1.SupportRepId = T2.EmployeeId GROUP BY T1.SupportRepId HAVING COUNT(*) <= 20",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h002",
+    "question": "Show the album names and ids for albums that contain tracks with unit price bigger than 1.",
+    "gold_sql": "SELECT T1.Title , T2.AlbumID FROM ALBUM AS T1 JOIN TRACK AS T2 ON T1.AlbumId = T2.AlbumId WHERE T2.UnitPrice > 1 GROUP BY T2.AlbumID",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "groupby",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h003",
+    "question": "What are the titles of albums by the artist \"AC/DC\"?",
+    "gold_sql": "SELECT Title FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId WHERE T2.Name = \"AC/DC\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h004",
+    "question": "Find the names of artists that do not have any albums.",
+    "gold_sql": "SELECT Name FROM ARTIST EXCEPT SELECT T2.Name FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h005",
+    "question": "What is the name of the artist with the greatest number of albums?",
+    "gold_sql": "SELECT T2.Name FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId GROUP BY T2.Name ORDER BY COUNT(*) DESC LIMIT 1",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "sort"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h006",
+    "question": "Find the birth dates corresponding to employees who live in the city of Edmonton.",
+    "gold_sql": "SELECT BirthDate FROM EMPLOYEE WHERE City = \"Edmonton\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h007",
+    "question": "List the phone numbers of all employees.",
+    "gold_sql": "SELECT Phone FROM EMPLOYEE",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "simple"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h008",
+    "question": "Find the maximum and minimum durations of tracks in milliseconds.",
+    "gold_sql": "SELECT max(Milliseconds) , min(Milliseconds) FROM TRACK",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h009",
+    "question": "Find the average unit price of jazz tracks.",
+    "gold_sql": "SELECT AVG(UnitPrice) FROM GENRE AS T1 JOIN TRACK AS T2 ON T1.GenreId = T2.GenreId WHERE T1.Name = \"Jazz\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h010",
+    "question": "Find the number of albums by the artist \"Metallica\".",
+    "gold_sql": "SELECT COUNT(*) FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId WHERE T2.Name = \"Metallica\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h011",
+    "question": "How many customers have email that contains \"gmail.com\"?",
+    "gold_sql": "SELECT COUNT(*) FROM CUSTOMER WHERE Email LIKE \"%gmail.com%\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h012",
+    "question": "What are the duration of the longest and shortest pop tracks in milliseconds?",
+    "gold_sql": "SELECT max(Milliseconds) , min(Milliseconds) FROM GENRE AS T1 JOIN TRACK AS T2 ON T1.GenreId = T2.GenreId WHERE T1.Name = \"Pop\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h013",
+    "question": "What city does the employee who helps the customer with postal code 70174 live in?",
+    "gold_sql": "SELECT T2.City FROM CUSTOMER AS T1 JOIN EMPLOYEE AS T2 ON T1.SupportRepId = T2.EmployeeId WHERE T1.PostalCode = \"70174\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h014",
+    "question": "Find the names of all artists that have \"a\" in their names.",
+    "gold_sql": "SELECT Name FROM ARTIST WHERE Name LIKE \"%a%\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h015",
+    "question": "Count the number of tracks that are of the media type \"AAC audio file\".",
+    "gold_sql": "SELECT COUNT(*) FROM MEDIATYPE AS T1 JOIN TRACK AS T2 ON T1.MediaTypeId = T2.MediaTypeId WHERE T1.Name = \"AAC audio file\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h016",
+    "question": "What is all the customer information for customers in NY state?",
+    "gold_sql": "SELECT * FROM CUSTOMER WHERE State = \"NY\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h017",
+    "question": "Find the title of all the albums of the artist \"AC/DC\".",
+    "gold_sql": "SELECT Title FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId WHERE T2.Name = \"AC/DC\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h018",
+    "question": "What are the last names of customers without invoice totals exceeding 20?",
+    "gold_sql": "SELECT LastName FROM CUSTOMER EXCEPT SELECT T1.LastName FROM CUSTOMER AS T1 JOIN Invoice AS T2 ON T1.CustomerId = T2.CustomerId WHERE T2.total > 20",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h019",
+    "question": "Find the titles of albums that contain tracks of both the Reggae and Rock genres.",
+    "gold_sql": "SELECT T1.Title FROM Album AS T1 JOIN Track AS T2 ON T1.AlbumId = T2.AlbumId JOIN Genre AS T3 ON T2.GenreID = T3.GenreID WHERE T3.Name = 'Reggae' INTERSECT SELECT T1.Title FROM Album AS T1 JOIN Track AS T2 ON T1.AlbumId = T2.AlbumId JOIN Genre AS T3 ON T2.GenreID = T3.GenreID WHERE T3.Name = 'Rock'",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 4
+  },
+  {
+    "task_id": "h020",
+    "question": "Which artist does the album \"Balls to the Wall\" belong to?",
+    "gold_sql": "SELECT T2.Name FROM ALBUM AS T1 JOIN ARTIST AS T2 ON T1.ArtistId = T2.ArtistId WHERE T1.Title = \"Balls to the Wall\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h021",
+    "question": "Count the number of customers that have an email containing \"gmail.com\".",
+    "gold_sql": "SELECT COUNT(*) FROM CUSTOMER WHERE Email LIKE \"%gmail.com%\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h022",
+    "question": "Find the number of different cities that employees live in.",
+    "gold_sql": "SELECT COUNT(DISTINCT city) FROM EMPLOYEE",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h023",
+    "question": "Find the average unit price of tracks from the Rock genre.",
+    "gold_sql": "SELECT AVG(T2.UnitPrice) FROM GENRE AS T1 JOIN TRACK AS T2 ON T1.GenreId = T2.GenreId WHERE T1.Name = \"Rock\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h024",
+    "question": "What are the album titles for albums containing both 'Reggae' and 'Rock' genre tracks?",
+    "gold_sql": "SELECT T1.Title FROM Album AS T1 JOIN Track AS T2 ON T1.AlbumId = T2.AlbumId JOIN Genre AS T3 ON T2.GenreID = T3.GenreID WHERE T3.Name = 'Reggae' INTERSECT SELECT T1.Title FROM Album AS T1 JOIN Track AS T2 ON T1.AlbumId = T2.AlbumId JOIN Genre AS T3 ON T2.GenreID = T3.GenreID WHERE T3.Name = 'Rock'",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 3,
+    "n_joins": 4
+  },
+  {
+    "task_id": "h025",
+    "question": "Find all the customer last names that do not have invoice totals larger than 20.",
+    "gold_sql": "SELECT LastName FROM CUSTOMER EXCEPT SELECT T1.LastName FROM CUSTOMER AS T1 JOIN Invoice AS T2 ON T1.CustomerId = T2.CustomerId WHERE T2.total > 20",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter",
+      "subquery",
+      "setop"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h026",
+    "question": "Please show the employee first names and ids of employees who serve at least 10 customers.",
+    "gold_sql": "SELECT T1.FirstName , T1.SupportRepId FROM CUSTOMER AS T1 JOIN EMPLOYEE AS T2 ON T1.SupportRepId = T2.EmployeeId GROUP BY T1.SupportRepId HAVING COUNT(*) >= 10",
+    "difficulty": "hard",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "aggregation",
+      "join",
+      "groupby",
+      "having"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h027",
+    "question": "What is the first name and last name employee helps the customer with first name Leonie?",
+    "gold_sql": "SELECT T2.FirstName , T2.LastName FROM CUSTOMER AS T1 JOIN EMPLOYEE AS T2 ON T1.SupportRepId = T2.EmployeeId WHERE T1.FirstName = \"Leonie\"",
+    "difficulty": "medium",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "join",
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 2,
+    "n_joins": 1
+  },
+  {
+    "task_id": "h028",
+    "question": "What are the distinct unit prices of all tracks?",
+    "gold_sql": "SELECT distinct(UnitPrice) FROM TRACK",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "simple"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h029",
+    "question": "What are the names of different music genres?",
+    "gold_sql": "SELECT Name FROM GENRE",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "simple"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  },
+  {
+    "task_id": "h030",
+    "question": "Find the full name of the customer with the email \"luisg@embraer.com.br\".",
+    "gold_sql": "SELECT FirstName , LastName FROM CUSTOMER WHERE Email = \"luisg@embraer.com.br\"",
+    "difficulty": "easy",
+    "db": "chinook_1",
+    "split": "holdout",
+    "tags": [
+      "filter"
+    ],
+    "source": "spider",
+    "n_tables": 1,
+    "n_joins": 0
+  }
+]

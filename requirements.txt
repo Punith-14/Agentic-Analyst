@@ -1,0 +1,24 @@
+# Project 23 — sub-problem B
+# Core dependencies. Enough to run data prep and notebook 01.
+# For the model / training stack see requirements-ml.txt
+
+# --- contracts & validation -------------------------------------------
+pydantic>=2.6,<3
+
+# --- data prep & analysis ---------------------------------------------
+pandas>=2.2
+numpy>=1.26
+
+# --- notebooks & plots ------------------------------------------------
+jupyterlab>=4.1
+ipykernel>=6.29
+matplotlib>=3.8
+seaborn>=0.13
+
+# --- utilities --------------------------------------------------------
+python-dotenv>=1.0        # .env handling, keys stay out of the repo
+tqdm>=4.66                # progress bars for long generation runs
+tiktoken>=0.6             # real token counting, not the /4 estimate
+
+# --- testing ----------------------------------------------------------
+pytest>=8.0

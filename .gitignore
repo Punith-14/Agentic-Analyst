@@ -1,0 +1,109 @@
+# =====================================================================
+# Project 23 — Agentic Analyst
+#
+# NOTE ON CASE: the folder on disk is `Data/` with a capital D. Git
+# patterns are case-sensitive even on Windows, so the rules below are
+# written for both spellings. Do not "tidy" that up — removing the
+# capitalised copies is how a 1.8 GB download ends up in the repo.
+#
+# What we DO commit, deliberately, is listed at the bottom. Read that
+# before adding anything here.
+# =====================================================================
+
+# --- secrets ---------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials.json
+
+# --- python ----------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- raw Spider download (1.8 GB) ------------------------------------
+# The only genuinely large thing here. Rebuild with:
+#     python data_prep/prepare_spider.py
+Data/spider_data/
+data/spider_data/
+
+# --- scratch databases -----------------------------------------------
+# The three Spider databases ARE committed (see the bottom of this file).
+# This catches anything else that appears in the folder.
+*.sqlite
+*.db-journal
+*.db-wal
+
+# --- large model weights ---------------------------------------------
+# The critic is small and committed. These are the LLM weights, which
+# Ollama manages — they must never be in git.
+checkpoints/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# --- os / editor -----------------------------------------------------
+.DS_Store
+__MACOSX/
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+
+# =====================================================================
+# DELIBERATELY COMMITTED — do not add these to the rules above
+# =====================================================================
+#
+# Data/db/*.db                 11 MB, all three Spider databases.
+#                              chinook_1 is required by the test suite,
+#                              so CI fails without it. college_2 and
+#                              formula_1 hold 120 of the 150 questions.
+#                              Committing them means no teammate ever
+#                              needs the 1.8 GB Spider download.
+#
+# Data/tasks/*.json            216 KB. Everyone must run the identical
+#                              150 questions or our numbers are not
+#                              comparable across layers.
+#
+# Data/trajectories/*.jsonl    10.2 MB, two files, NOT reproducible —
+#                              sampled at temperature 0.7, so those exact
+#                              runs are gone forever if lost.
+#                                -train.jsonl        1,620 runs, the
+#                                                    critic's training set
+#                                -superseded.jsonl      80 runs, pre-fix
+#                                                    baseline (9.2% solve
+#                                                    rate vs 30.9%), kept
+#                                                    as evidence
+#                              DO NOT MERGE OR RENAME THESE — the
+#                              exclusion is by filename. See README.
+#
+# Data/critic/*.parquet        889 KB. Derived, but it pins the exact
+#                              table behind the reported numbers.
+#
+# Data/critic/split.json       The frozen train/test split. Must be
+#                              identical for everyone or results drift.
+#
+# models/critic_*.joblib       2.6 MB, so A, C and D can load the critic
+#                              without retraining it.
+#
+# notebooks/*.ipynb            Committed WITH their outputs. The charts
+#                              are the results record — a reviewer
+#                              cloning this repo should see them without
+#                              a GPU. Normally you would strip outputs;
+#                              this is a deliberate exception.
+#
+# If any of these grows past ~50 MB, reconsider — but move it to Git LFS
+# rather than silently dropping it.

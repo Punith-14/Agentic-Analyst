@@ -1,0 +1,1506 @@
+{
+  "formula_1": {
+    "tables": {
+      "circuits": {
+        "columns": [
+          {
+            "name": "circuitId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "circuitRef",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "location",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "country",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "lat",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "lng",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "alt",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "url",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 73
+      },
+      "constructorResults": {
+        "columns": [
+          {
+            "name": "constructorResultsId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "constructorId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "points",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 11142
+      },
+      "constructorStandings": {
+        "columns": [
+          {
+            "name": "constructorStandingsId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "constructorId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "points",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "position",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "positionText",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "wins",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 11896
+      },
+      "constructors": {
+        "columns": [
+          {
+            "name": "constructorId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "constructorRef",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "nationality",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "url",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 208
+      },
+      "driverStandings": {
+        "columns": [
+          {
+            "name": "driverStandingsId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "points",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "position",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "positionText",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "wins",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 31726
+      },
+      "drivers": {
+        "columns": [
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "driverRef",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "number",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "code",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "forename",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "surname",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "dob",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "nationality",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "url",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 842
+      },
+      "lapTimes": {
+        "columns": [
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "lap",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "position",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "time",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "milliseconds",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 0
+      },
+      "pitStops": {
+        "columns": [
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "stop",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "lap",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "time",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "duration",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "milliseconds",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 0
+      },
+      "qualifying": {
+        "columns": [
+          {
+            "name": "qualifyId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "constructorId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "number",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "position",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "q1",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "q2",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "q3",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 7516
+      },
+      "races": {
+        "columns": [
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "year",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "round",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "circuitId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "date",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "time",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "url",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 997
+      },
+      "results": {
+        "columns": [
+          {
+            "name": "resultId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "raceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "driverId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "constructorId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "number",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "grid",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "position",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "positionText",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "positionOrder",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "points",
+            "type": "REAL",
+            "pk": false
+          },
+          {
+            "name": "laps",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "time",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "milliseconds",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "fastestLap",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "rank",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "fastestLapTime",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "fastestLapSpeed",
+            "type": "TEXT",
+            "pk": false
+          },
+          {
+            "name": "statusId",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 23777
+      },
+      "seasons": {
+        "columns": [
+          {
+            "name": "year",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "url",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 69
+      },
+      "status": {
+        "columns": [
+          {
+            "name": "statusId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "pk": false
+          }
+        ],
+        "rows": 134
+      }
+    },
+    "foreign_keys": [
+      {
+        "from_table": "constructorResults",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "constructorResults",
+        "from_col": "constructorId",
+        "to_table": "constructors",
+        "to_col": "constructorId"
+      },
+      {
+        "from_table": "constructorStandings",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "constructorStandings",
+        "from_col": "constructorId",
+        "to_table": "constructors",
+        "to_col": "constructorId"
+      },
+      {
+        "from_table": "driverStandings",
+        "from_col": "driverId",
+        "to_table": "drivers",
+        "to_col": "driverId"
+      },
+      {
+        "from_table": "driverStandings",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "lapTimes",
+        "from_col": "driverId",
+        "to_table": "drivers",
+        "to_col": "driverId"
+      },
+      {
+        "from_table": "lapTimes",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "pitStops",
+        "from_col": "driverId",
+        "to_table": "drivers",
+        "to_col": "driverId"
+      },
+      {
+        "from_table": "pitStops",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "qualifying",
+        "from_col": "driverId",
+        "to_table": "drivers",
+        "to_col": "driverId"
+      },
+      {
+        "from_table": "qualifying",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "qualifying",
+        "from_col": "constructorId",
+        "to_table": "constructors",
+        "to_col": "constructorId"
+      },
+      {
+        "from_table": "races",
+        "from_col": "circuitId",
+        "to_table": "circuits",
+        "to_col": "circuitId"
+      },
+      {
+        "from_table": "results",
+        "from_col": "driverId",
+        "to_table": "drivers",
+        "to_col": "driverId"
+      },
+      {
+        "from_table": "results",
+        "from_col": "raceId",
+        "to_table": "races",
+        "to_col": "raceId"
+      },
+      {
+        "from_table": "results",
+        "from_col": "constructorId",
+        "to_table": "constructors",
+        "to_col": "constructorId"
+      }
+    ],
+    "total_rows": 88380
+  },
+  "college_2": {
+    "tables": {
+      "advisor": {
+        "columns": [
+          {
+            "name": "s_ID",
+            "type": "varchar(5)",
+            "pk": true
+          },
+          {
+            "name": "i_ID",
+            "type": "varchar(5)",
+            "pk": false
+          }
+        ],
+        "rows": 2000
+      },
+      "classroom": {
+        "columns": [
+          {
+            "name": "building",
+            "type": "varchar(15)",
+            "pk": true
+          },
+          {
+            "name": "room_number",
+            "type": "varchar(7)",
+            "pk": true
+          },
+          {
+            "name": "capacity",
+            "type": "numeric(4,0)",
+            "pk": false
+          }
+        ],
+        "rows": 30
+      },
+      "course": {
+        "columns": [
+          {
+            "name": "course_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "title",
+            "type": "varchar(50)",
+            "pk": false
+          },
+          {
+            "name": "dept_name",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "credits",
+            "type": "numeric(2,0)",
+            "pk": false
+          }
+        ],
+        "rows": 200
+      },
+      "department": {
+        "columns": [
+          {
+            "name": "dept_name",
+            "type": "varchar(20)",
+            "pk": true
+          },
+          {
+            "name": "building",
+            "type": "varchar(15)",
+            "pk": false
+          },
+          {
+            "name": "budget",
+            "type": "numeric(12,2)",
+            "pk": false
+          }
+        ],
+        "rows": 20
+      },
+      "instructor": {
+        "columns": [
+          {
+            "name": "ID",
+            "type": "varchar(5)",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "dept_name",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "salary",
+            "type": "numeric(8,2)",
+            "pk": false
+          }
+        ],
+        "rows": 50
+      },
+      "prereq": {
+        "columns": [
+          {
+            "name": "course_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "prereq_id",
+            "type": "varchar(8)",
+            "pk": true
+          }
+        ],
+        "rows": 100
+      },
+      "section": {
+        "columns": [
+          {
+            "name": "course_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "sec_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "semester",
+            "type": "varchar(6)",
+            "pk": true
+          },
+          {
+            "name": "year",
+            "type": "numeric(4,0)",
+            "pk": true
+          },
+          {
+            "name": "building",
+            "type": "varchar(15)",
+            "pk": false
+          },
+          {
+            "name": "room_number",
+            "type": "varchar(7)",
+            "pk": false
+          },
+          {
+            "name": "time_slot_id",
+            "type": "varchar(4)",
+            "pk": false
+          }
+        ],
+        "rows": 100
+      },
+      "student": {
+        "columns": [
+          {
+            "name": "ID",
+            "type": "varchar(5)",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "dept_name",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "tot_cred",
+            "type": "numeric(3,0)",
+            "pk": false
+          }
+        ],
+        "rows": 2000
+      },
+      "takes": {
+        "columns": [
+          {
+            "name": "ID",
+            "type": "varchar(5)",
+            "pk": true
+          },
+          {
+            "name": "course_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "sec_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "semester",
+            "type": "varchar(6)",
+            "pk": true
+          },
+          {
+            "name": "year",
+            "type": "numeric(4,0)",
+            "pk": true
+          },
+          {
+            "name": "grade",
+            "type": "varchar(2)",
+            "pk": false
+          }
+        ],
+        "rows": 30000
+      },
+      "teaches": {
+        "columns": [
+          {
+            "name": "ID",
+            "type": "varchar(5)",
+            "pk": true
+          },
+          {
+            "name": "course_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "sec_id",
+            "type": "varchar(8)",
+            "pk": true
+          },
+          {
+            "name": "semester",
+            "type": "varchar(6)",
+            "pk": true
+          },
+          {
+            "name": "year",
+            "type": "numeric(4,0)",
+            "pk": true
+          }
+        ],
+        "rows": 100
+      },
+      "time_slot": {
+        "columns": [
+          {
+            "name": "time_slot_id",
+            "type": "varchar(4)",
+            "pk": true
+          },
+          {
+            "name": "day",
+            "type": "varchar(1)",
+            "pk": true
+          },
+          {
+            "name": "start_hr",
+            "type": "numeric(2)",
+            "pk": true
+          },
+          {
+            "name": "start_min",
+            "type": "numeric(2)",
+            "pk": true
+          },
+          {
+            "name": "end_hr",
+            "type": "numeric(2)",
+            "pk": false
+          },
+          {
+            "name": "end_min",
+            "type": "numeric(2)",
+            "pk": false
+          }
+        ],
+        "rows": 20
+      }
+    },
+    "foreign_keys": [
+      {
+        "from_table": "advisor",
+        "from_col": "s_ID",
+        "to_table": "student",
+        "to_col": "ID"
+      },
+      {
+        "from_table": "advisor",
+        "from_col": "i_ID",
+        "to_table": "instructor",
+        "to_col": "ID"
+      },
+      {
+        "from_table": "course",
+        "from_col": "dept_name",
+        "to_table": "department",
+        "to_col": "dept_name"
+      },
+      {
+        "from_table": "instructor",
+        "from_col": "dept_name",
+        "to_table": "department",
+        "to_col": "dept_name"
+      },
+      {
+        "from_table": "prereq",
+        "from_col": "prereq_id",
+        "to_table": "course",
+        "to_col": "course_id"
+      },
+      {
+        "from_table": "prereq",
+        "from_col": "course_id",
+        "to_table": "course",
+        "to_col": "course_id"
+      },
+      {
+        "from_table": "section",
+        "from_col": "building",
+        "to_table": "classroom",
+        "to_col": "building"
+      },
+      {
+        "from_table": "section",
+        "from_col": "room_number",
+        "to_table": "classroom",
+        "to_col": "room_number"
+      },
+      {
+        "from_table": "section",
+        "from_col": "course_id",
+        "to_table": "course",
+        "to_col": "course_id"
+      },
+      {
+        "from_table": "student",
+        "from_col": "dept_name",
+        "to_table": "department",
+        "to_col": "dept_name"
+      },
+      {
+        "from_table": "takes",
+        "from_col": "ID",
+        "to_table": "student",
+        "to_col": "ID"
+      },
+      {
+        "from_table": "takes",
+        "from_col": "course_id",
+        "to_table": "section",
+        "to_col": "course_id"
+      },
+      {
+        "from_table": "takes",
+        "from_col": "sec_id",
+        "to_table": "section",
+        "to_col": "sec_id"
+      },
+      {
+        "from_table": "takes",
+        "from_col": "semester",
+        "to_table": "section",
+        "to_col": "semester"
+      },
+      {
+        "from_table": "takes",
+        "from_col": "year",
+        "to_table": "section",
+        "to_col": "year"
+      },
+      {
+        "from_table": "teaches",
+        "from_col": "ID",
+        "to_table": "instructor",
+        "to_col": "ID"
+      },
+      {
+        "from_table": "teaches",
+        "from_col": "course_id",
+        "to_table": "section",
+        "to_col": "course_id"
+      },
+      {
+        "from_table": "teaches",
+        "from_col": "sec_id",
+        "to_table": "section",
+        "to_col": "sec_id"
+      },
+      {
+        "from_table": "teaches",
+        "from_col": "semester",
+        "to_table": "section",
+        "to_col": "semester"
+      },
+      {
+        "from_table": "teaches",
+        "from_col": "year",
+        "to_table": "section",
+        "to_col": "year"
+      }
+    ],
+    "total_rows": 34620
+  },
+  "chinook_1": {
+    "tables": {
+      "Album": {
+        "columns": [
+          {
+            "name": "AlbumId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Title",
+            "type": "varchar(160)",
+            "pk": false
+          },
+          {
+            "name": "ArtistId",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 347
+      },
+      "Artist": {
+        "columns": [
+          {
+            "name": "ArtistId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Name",
+            "type": "varchar(120)",
+            "pk": false
+          }
+        ],
+        "rows": 275
+      },
+      "Customer": {
+        "columns": [
+          {
+            "name": "CustomerId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "FirstName",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "LastName",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "Company",
+            "type": "varchar(80)",
+            "pk": false
+          },
+          {
+            "name": "Address",
+            "type": "varchar(70)",
+            "pk": false
+          },
+          {
+            "name": "City",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "State",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "Country",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "PostalCode",
+            "type": "varchar(10)",
+            "pk": false
+          },
+          {
+            "name": "Phone",
+            "type": "varchar(24)",
+            "pk": false
+          },
+          {
+            "name": "Fax",
+            "type": "varchar(24)",
+            "pk": false
+          },
+          {
+            "name": "Email",
+            "type": "varchar(60)",
+            "pk": false
+          },
+          {
+            "name": "SupportRepId",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 59
+      },
+      "Employee": {
+        "columns": [
+          {
+            "name": "EmployeeId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "LastName",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "FirstName",
+            "type": "varchar(20)",
+            "pk": false
+          },
+          {
+            "name": "Title",
+            "type": "varchar(30)",
+            "pk": false
+          },
+          {
+            "name": "ReportsTo",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "BirthDate",
+            "type": "datetime",
+            "pk": false
+          },
+          {
+            "name": "HireDate",
+            "type": "datetime",
+            "pk": false
+          },
+          {
+            "name": "Address",
+            "type": "varchar(70)",
+            "pk": false
+          },
+          {
+            "name": "City",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "State",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "Country",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "PostalCode",
+            "type": "varchar(10)",
+            "pk": false
+          },
+          {
+            "name": "Phone",
+            "type": "varchar(24)",
+            "pk": false
+          },
+          {
+            "name": "Fax",
+            "type": "varchar(24)",
+            "pk": false
+          },
+          {
+            "name": "Email",
+            "type": "varchar(60)",
+            "pk": false
+          }
+        ],
+        "rows": 8
+      },
+      "Genre": {
+        "columns": [
+          {
+            "name": "GenreId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Name",
+            "type": "varchar(120)",
+            "pk": false
+          }
+        ],
+        "rows": 25
+      },
+      "Invoice": {
+        "columns": [
+          {
+            "name": "InvoiceId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "CustomerId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "InvoiceDate",
+            "type": "datetime",
+            "pk": false
+          },
+          {
+            "name": "BillingAddress",
+            "type": "varchar(70)",
+            "pk": false
+          },
+          {
+            "name": "BillingCity",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "BillingState",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "BillingCountry",
+            "type": "varchar(40)",
+            "pk": false
+          },
+          {
+            "name": "BillingPostalCode",
+            "type": "varchar(10)",
+            "pk": false
+          },
+          {
+            "name": "Total",
+            "type": "decimal(10,2)",
+            "pk": false
+          }
+        ],
+        "rows": 412
+      },
+      "InvoiceLine": {
+        "columns": [
+          {
+            "name": "InvoiceLineId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "InvoiceId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "TrackId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "UnitPrice",
+            "type": "decimal(10,2)",
+            "pk": false
+          },
+          {
+            "name": "Quantity",
+            "type": "INTEGER",
+            "pk": false
+          }
+        ],
+        "rows": 2240
+      },
+      "MediaType": {
+        "columns": [
+          {
+            "name": "MediaTypeId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Name",
+            "type": "varchar(120)",
+            "pk": false
+          }
+        ],
+        "rows": 5
+      },
+      "Playlist": {
+        "columns": [
+          {
+            "name": "PlaylistId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Name",
+            "type": "varchar(120)",
+            "pk": false
+          }
+        ],
+        "rows": 18
+      },
+      "PlaylistTrack": {
+        "columns": [
+          {
+            "name": "PlaylistId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "TrackId",
+            "type": "INTEGER",
+            "pk": true
+          }
+        ],
+        "rows": 8715
+      },
+      "Track": {
+        "columns": [
+          {
+            "name": "TrackId",
+            "type": "INTEGER",
+            "pk": true
+          },
+          {
+            "name": "Name",
+            "type": "varchar(200)",
+            "pk": false
+          },
+          {
+            "name": "AlbumId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "MediaTypeId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "GenreId",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "Composer",
+            "type": "varchar(220)",
+            "pk": false
+          },
+          {
+            "name": "Milliseconds",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "Bytes",
+            "type": "INTEGER",
+            "pk": false
+          },
+          {
+            "name": "UnitPrice",
+            "type": "decimal(10,2)",
+            "pk": false
+          }
+        ],
+        "rows": 3503
+      }
+    },
+    "foreign_keys": [
+      {
+        "from_table": "Album",
+        "from_col": "ArtistId",
+        "to_table": "Artist",
+        "to_col": "ArtistId"
+      },
+      {
+        "from_table": "Customer",
+        "from_col": "SupportRepId",
+        "to_table": "Employee",
+        "to_col": "EmployeeId"
+      },
+      {
+        "from_table": "Employee",
+        "from_col": "ReportsTo",
+        "to_table": "Employee",
+        "to_col": "EmployeeId"
+      },
+      {
+        "from_table": "Invoice",
+        "from_col": "CustomerId",
+        "to_table": "Customer",
+        "to_col": "CustomerId"
+      },
+      {
+        "from_table": "InvoiceLine",
+        "from_col": "TrackId",
+        "to_table": "Track",
+        "to_col": "TrackId"
+      },
+      {
+        "from_table": "InvoiceLine",
+        "from_col": "InvoiceId",
+        "to_table": "Invoice",
+        "to_col": "InvoiceId"
+      },
+      {
+        "from_table": "PlaylistTrack",
+        "from_col": "TrackId",
+        "to_table": "Track",
+        "to_col": "TrackId"
+      },
+      {
+        "from_table": "PlaylistTrack",
+        "from_col": "PlaylistId",
+        "to_table": "Playlist",
+        "to_col": "PlaylistId"
+      },
+      {
+        "from_table": "Track",
+        "from_col": "MediaTypeId",
+        "to_table": "MediaType",
+        "to_col": "MediaTypeId"
+      },
+      {
+        "from_table": "Track",
+        "from_col": "GenreId",
+        "to_table": "Genre",
+        "to_col": "GenreId"
+      },
+      {
+        "from_table": "Track",
+        "from_col": "AlbumId",
+        "to_table": "Album",
+        "to_col": "AlbumId"
+      }
+    ],
+    "total_rows": 15607
+  }
+}

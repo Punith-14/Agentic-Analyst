@@ -1,0 +1,47 @@
+# Runs the test suite on every pull request and every push to main.
+#
+# WHY THIS EXISTS: four people share contracts.py. When layer A changes a
+# tool signature it breaks layer B's loop, and without this the breakage is
+# found two days later by whoever pulls next. This finds it before the merge.
+#
+# The tests use the scripted fake LLM, not Ollama, so no GPU and no model
+# download is needed. They do need Data/db/chinook_1.db, which is committed
+# for exactly this reason — see .gitignore.
+
+name: tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        # requirements.txt only. The ML stack (torch, transformers) is not
+        # needed to run the tests and would add several minutes per run.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check the test database is present
+        # A clearer failure than 20 confusing SQL errors if the ignore rules
+        # get "tidied up" and chinook_1.db stops being committed.
+        run: |
+          test -f Data/db/chinook_1.db \
+            || { echo "::error::Data/db/chinook_1.db is missing. It must stay committed — see .gitignore."; exit 1; }
+
+      - name: Run tests
+        run: pytest -q
