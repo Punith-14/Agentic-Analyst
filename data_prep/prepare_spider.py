@@ -4,8 +4,8 @@ Databases are kept separate rather than merged. Merging the three would put ~35
 tables into every prompt (~1500 tokens of mostly irrelevant schema) versus ~500
 for one. It also makes the held-out-domain split fall out naturally.
 
-    python data_prep/prepare_spider.py --spider-dir Data/spider_data --list
-    python data_prep/prepare_spider.py --spider-dir Data/spider_data \
+    python data_prep/prepare_spider.py --spider-dir data/spider_data --list
+    python data_prep/prepare_spider.py --spider-dir data/spider_data \
         --dbs formula_1,college_2 --holdout chinook_1 --n 40
 """
 

@@ -90,11 +90,9 @@ pip install -r requirements-ml.txt    # only if you train models
 
 ### 4. Build the data you need
 
-The large data files are **not** in the repo — they are 1.8 GB and rebuildable.
-
-```bash
-python data_prep/prepare_spider.py
-```
+**Nothing to do.** The three databases and the 150-question suite are committed,
+so a fresh clone is immediately runnable. You do **not** need the 1.8 GB Spider
+download unless you want to change the question set.
 
 ### 5. Check it works
 
@@ -480,7 +478,7 @@ The `.gitignore` blocks these. Don't work around it.
 
 | Never commit | Why | Instead |
 |---|---|---|
-| `Data/spider_data/` | 1.8 GB | `python data_prep/prepare_spider.py` |
+| `data/spider_data/` | 1.8 GB | `python data_prep/prepare_spider.py` |
 | `.venv/` | Thousands of files, machine-specific | `pip install -r requirements.txt` |
 | `.env`, API keys | Security | `.env.example` is committed with blank values — copy it |
 | `__pycache__/` | Generated | — |
@@ -491,11 +489,11 @@ ignored and aren't. Don't "clean them up":
 
 | Committed | Size | Why |
 |---|---|---|
-| `Data/db/*.db` | 11 MB | `chinook_1` is required by the tests, so CI fails without it. All three mean **nobody ever needs the 1.8 GB Spider download** |
-| `Data/tasks/*.json` | 216 KB | Everyone must run the identical 150 questions, or our numbers aren't comparable across layers |
-| `Data/trajectories/*.jsonl` | 10.2 MB | **Not reproducible.** Sampled at temperature 0.7 — those exact runs are gone forever if lost. Three of the four ML components train on them |
-| `Data/critic/labelled_steps.parquet` | 889 KB | Derived, but it pins the exact table behind the reported numbers |
-| `Data/critic/split.json` | 5.8 KB | The frozen train/test split. Must be identical for everyone or results drift |
+| `data/db/*.db` | 11 MB | `chinook_1` is required by the tests, so CI fails without it. All three mean **nobody ever needs the 1.8 GB Spider download** |
+| `data/tasks/*.json` | 216 KB | Everyone must run the identical 150 questions, or our numbers aren't comparable across layers |
+| `data/trajectories/*.jsonl` | 10.2 MB | **Not reproducible.** Sampled at temperature 0.7 — those exact runs are gone forever if lost. Three of the four ML components train on them |
+| `data/critic/labelled_steps.parquet` | 889 KB | Derived, but it pins the exact table behind the reported numbers |
+| `data/critic/split.json` | 5.8 KB | The frozen train/test split. Must be identical for everyone or results drift |
 | `models/critic_*.joblib` | 2.6 MB | So A, C and D can load the critic without retraining it |
 
 **Do not merge the two trajectory files into one, and do not rename them.**
