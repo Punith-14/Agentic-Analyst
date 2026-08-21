@@ -1,5 +1,5 @@
 # tools/classifier.py
-"""Dhrub (Layer A) - ML Component: Tool-Selection Classifier.
+"""Harish (Layer A) - ML Component: Tool-Selection Classifier.
 Predicts which tool to call next given question text and current state features.
 Compared against baseline: 'let the LLM choose the tool'.
 Reports accuracy, latency (ms), and evaluation metrics.

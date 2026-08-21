@@ -1,0 +1,39 @@
+# Project 23 — sub-problem B
+# Model serving and training stack. Install in week 2 (Days 2 and 10-13).
+#
+# IMPORTANT — install PyTorch FIRST and SEPARATELY, with CUDA support.
+# The plain `pip install torch` gives you the CPU build, which will make
+# fine-tuning unusably slow on your RTX 3050.
+#
+#   1) check your CUDA version:   nvidia-smi
+#   2) get the right command at:  https://pytorch.org/get-started/locally/
+#      (typically, for CUDA 12.1:)
+#      pip install torch --index-url https://download.pytorch.org/whl/cu121
+#   3) verify:  python -c "import torch; print(torch.cuda.is_available())"
+#      must print True. If it prints False, stop and fix it before continuing.
+#
+# THEN install everything below.
+
+# --- running the local 7B ---------------------------------------------
+# Option A (recommended): install Ollama as a desktop app, no pip needed.
+#   https://ollama.com  ->  ollama pull qwen2.5-coder:7b
+#   then talk to it over HTTP:
+requests>=2.31
+
+# Option B: llama-cpp-python. More control (KV cache quantisation flags),
+# but needs a compiler on Windows. Uncomment only if you go this route.
+# llama-cpp-python>=0.2.79
+
+# --- critic: fine-tuned encoder ---------------------------------------
+transformers>=4.44
+datasets>=2.20
+accelerate>=0.33
+scikit-learn>=1.5         # metrics, calibration, splits
+
+# --- critic: feature-based ablation -----------------------------------
+lightgbm>=4.3
+
+# --- optional, only if you attempt QLoRA on a small model -------------
+# peft>=0.12
+# bitsandbytes>=0.43
+# unsloth

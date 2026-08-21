@@ -1,0 +1,470 @@
+[
+  {
+    "label": "baseline",
+    "timestamp": "2026-08-08T08:09:55.397291+00:00",
+    "model": "qwen2.5-coder:3b",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "gpu": {
+      "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "vram_used_mb": 2167,
+      "vram_total_mb": 6144,
+      "temp_c": 50
+    },
+    "speed": {
+      "tokens_per_sec_mean": 66.5,
+      "tokens_per_sec_min": 64.1,
+      "runs": [
+        70.0,
+        65.3,
+        64.1
+      ]
+    },
+    "context_sweep": [
+      {
+        "target_tokens": 500,
+        "ok": true,
+        "prompt_tokens": 681,
+        "prompt_shortfall": -181,
+        "vram_used_mb": 2093,
+        "vram_over_idle_mb": -74,
+        "prefill_s": 0.318,
+        "gen_s": 0.92,
+        "tokens_per_sec": 69.6
+      },
+      {
+        "target_tokens": 1000,
+        "ok": true,
+        "prompt_tokens": 1282,
+        "prompt_shortfall": -282,
+        "vram_used_mb": 2093,
+        "vram_over_idle_mb": -74,
+        "prefill_s": 0.482,
+        "gen_s": 0.931,
+        "tokens_per_sec": 68.7
+      },
+      {
+        "target_tokens": 2000,
+        "ok": true,
+        "prompt_tokens": 2482,
+        "prompt_shortfall": -482,
+        "vram_used_mb": 2111,
+        "vram_over_idle_mb": -56,
+        "prefill_s": 0.95,
+        "gen_s": 0.95,
+        "tokens_per_sec": 67.4
+      },
+      {
+        "target_tokens": 4000,
+        "ok": true,
+        "prompt_tokens": 2258,
+        "prompt_shortfall": 1742,
+        "vram_used_mb": 2273,
+        "vram_over_idle_mb": 106,
+        "prefill_s": 0.856,
+        "gen_s": 0.165,
+        "tokens_per_sec": 66.7
+      },
+      {
+        "target_tokens": 6000,
+        "ok": true,
+        "prompt_tokens": 3258,
+        "prompt_shortfall": 2742,
+        "vram_used_mb": 2349,
+        "vram_over_idle_mb": 182,
+        "prefill_s": 1.215,
+        "gen_s": 0.969,
+        "tokens_per_sec": 66.0
+      },
+      {
+        "target_tokens": 8000,
+        "ok": true,
+        "prompt_tokens": 4258,
+        "prompt_shortfall": 3742,
+        "vram_used_mb": 2425,
+        "vram_over_idle_mb": 258,
+        "prefill_s": 1.643,
+        "gen_s": 0.985,
+        "tokens_per_sec": 65.0
+      },
+      {
+        "target_tokens": 10000,
+        "ok": true,
+        "prompt_tokens": 5258,
+        "prompt_shortfall": 4742,
+        "vram_used_mb": 2501,
+        "vram_over_idle_mb": 334,
+        "prefill_s": 1.999,
+        "gen_s": 0.17,
+        "tokens_per_sec": 64.7
+      },
+      {
+        "target_tokens": 12000,
+        "ok": true,
+        "prompt_tokens": 6258,
+        "prompt_shortfall": 5742,
+        "vram_used_mb": 2567,
+        "vram_over_idle_mb": 400,
+        "prefill_s": 2.411,
+        "gen_s": 1.004,
+        "tokens_per_sec": 63.7
+      },
+      {
+        "target_tokens": 16000,
+        "ok": true,
+        "prompt_tokens": 8258,
+        "prompt_shortfall": 7742,
+        "vram_used_mb": 2719,
+        "vram_over_idle_mb": 552,
+        "prefill_s": 3.321,
+        "gen_s": 0.177,
+        "tokens_per_sec": 62.1
+      }
+    ],
+    "realistic": {
+      "wall_s": 8.767,
+      "prompt_tokens": 2050,
+      "output_tokens": 11,
+      "prompt_eval_s": 0.793,
+      "gen_s": 0.164,
+      "response": "I should inspect the schema before writing the query.",
+      "estimated_10_step_run_s": 52.6,
+      "estimated_200_runs_hours": 2.92
+    },
+    "max_context_ok": 16000,
+    "recommended_token_budget": 12800
+  },
+  {
+    "label": "kv-q8",
+    "timestamp": "2026-08-08T08:17:21.220227+00:00",
+    "model": "qwen2.5-coder:3b",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "gpu": {
+      "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "vram_used_mb": 0,
+      "vram_total_mb": 6144,
+      "temp_c": 49
+    },
+    "speed": {
+      "tokens_per_sec_mean": 68.1,
+      "tokens_per_sec_min": 65.4,
+      "runs": [
+        68.7,
+        70.3,
+        65.4
+      ]
+    },
+    "context_sweep": [
+      {
+        "target_tokens": 500,
+        "ok": true,
+        "prompt_tokens": 681,
+        "prompt_shortfall": -181,
+        "vram_used_mb": 2093,
+        "vram_over_idle_mb": -74,
+        "prefill_s": 0.317,
+        "gen_s": 0.919,
+        "tokens_per_sec": 69.6
+      },
+      {
+        "target_tokens": 1000,
+        "ok": true,
+        "prompt_tokens": 1282,
+        "prompt_shortfall": -282,
+        "vram_used_mb": 2093,
+        "vram_over_idle_mb": -74,
+        "prefill_s": 0.476,
+        "gen_s": 0.922,
+        "tokens_per_sec": 69.4
+      },
+      {
+        "target_tokens": 2000,
+        "ok": true,
+        "prompt_tokens": 2481,
+        "prompt_shortfall": -481,
+        "vram_used_mb": 2111,
+        "vram_over_idle_mb": -56,
+        "prefill_s": 0.95,
+        "gen_s": 0.946,
+        "tokens_per_sec": 67.7
+      },
+      {
+        "target_tokens": 4000,
+        "ok": true,
+        "prompt_tokens": 2258,
+        "prompt_shortfall": 1742,
+        "vram_used_mb": 2273,
+        "vram_over_idle_mb": 106,
+        "prefill_s": 0.842,
+        "gen_s": 0.165,
+        "tokens_per_sec": 66.7
+      },
+      {
+        "target_tokens": 6000,
+        "ok": true,
+        "prompt_tokens": 3258,
+        "prompt_shortfall": 2742,
+        "vram_used_mb": 2349,
+        "vram_over_idle_mb": 182,
+        "prefill_s": 1.208,
+        "gen_s": 0.961,
+        "tokens_per_sec": 66.6
+      },
+      {
+        "target_tokens": 8000,
+        "ok": true,
+        "prompt_tokens": 4258,
+        "prompt_shortfall": 3742,
+        "vram_used_mb": 2425,
+        "vram_over_idle_mb": 258,
+        "prefill_s": 1.615,
+        "gen_s": 0.985,
+        "tokens_per_sec": 65.0
+      },
+      {
+        "target_tokens": 10000,
+        "ok": true,
+        "prompt_tokens": 5258,
+        "prompt_shortfall": 4742,
+        "vram_used_mb": 2501,
+        "vram_over_idle_mb": 334,
+        "prefill_s": 2.005,
+        "gen_s": 0.172,
+        "tokens_per_sec": 64.0
+      },
+      {
+        "target_tokens": 12000,
+        "ok": true,
+        "prompt_tokens": 6258,
+        "prompt_shortfall": 5742,
+        "vram_used_mb": 2567,
+        "vram_over_idle_mb": 400,
+        "prefill_s": 2.426,
+        "gen_s": 1.007,
+        "tokens_per_sec": 63.6
+      },
+      {
+        "target_tokens": 16000,
+        "ok": true,
+        "prompt_tokens": 8258,
+        "prompt_shortfall": 7742,
+        "vram_used_mb": 2719,
+        "vram_over_idle_mb": 552,
+        "prefill_s": 3.335,
+        "gen_s": 0.181,
+        "tokens_per_sec": 60.8
+      },
+      {
+        "target_tokens": 20000,
+        "ok": true,
+        "prompt_tokens": 10258,
+        "prompt_shortfall": 9742,
+        "vram_used_mb": 2871,
+        "vram_over_idle_mb": 704,
+        "prefill_s": 4.29,
+        "gen_s": 0.181,
+        "tokens_per_sec": 60.8
+      },
+      {
+        "target_tokens": 24000,
+        "ok": true,
+        "prompt_tokens": 12258,
+        "prompt_shortfall": 11742,
+        "vram_used_mb": 3013,
+        "vram_over_idle_mb": 846,
+        "prefill_s": 5.249,
+        "gen_s": 0.186,
+        "tokens_per_sec": 59.1
+      },
+      {
+        "target_tokens": 32000,
+        "ok": true,
+        "prompt_tokens": 16258,
+        "prompt_shortfall": 15742,
+        "vram_used_mb": 3309,
+        "vram_over_idle_mb": 1142,
+        "prefill_s": 7.529,
+        "gen_s": 0.204,
+        "tokens_per_sec": 53.9
+      }
+    ],
+    "realistic": {
+      "wall_s": 9.161,
+      "prompt_tokens": 2050,
+      "output_tokens": 11,
+      "prompt_eval_s": 0.817,
+      "gen_s": 0.166,
+      "response": "I should inspect the schema before writing the query.",
+      "estimated_10_step_run_s": 55.0,
+      "estimated_200_runs_hours": 3.05
+    },
+    "max_context_ok": 32000,
+    "recommended_token_budget": 25600
+  },
+  {
+    "label": "baseline",
+    "timestamp": "2026-08-09T04:03:08.266491+00:00",
+    "model": "qwen2.5-coder:3b",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "gpu": {
+      "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "vram_used_mb": 2099,
+      "vram_total_mb": 6144,
+      "temp_c": 49
+    },
+    "speed": {
+      "tokens_per_sec_mean": 63.4,
+      "tokens_per_sec_min": 61.0,
+      "runs": [
+        66.5,
+        61.0,
+        62.7
+      ]
+    },
+    "context_sweep": [
+      {
+        "target_tokens": 500,
+        "ok": true,
+        "prompt_tokens": 683,
+        "prompt_shortfall": -183,
+        "vram_used_mb": 2063,
+        "vram_over_idle_mb": -36,
+        "prefill_s": 0.38,
+        "gen_s": 0.989,
+        "tokens_per_sec": 64.7
+      },
+      {
+        "target_tokens": 1000,
+        "ok": true,
+        "prompt_tokens": 1281,
+        "prompt_shortfall": -281,
+        "vram_used_mb": 2063,
+        "vram_over_idle_mb": -36,
+        "prefill_s": 0.494,
+        "gen_s": 0.979,
+        "tokens_per_sec": 65.4
+      },
+      {
+        "target_tokens": 2000,
+        "ok": true,
+        "prompt_tokens": 2481,
+        "prompt_shortfall": -481,
+        "vram_used_mb": 2071,
+        "vram_over_idle_mb": -28,
+        "prefill_s": 0.989,
+        "gen_s": 1.015,
+        "tokens_per_sec": 63.1
+      },
+      {
+        "target_tokens": 4000,
+        "ok": true,
+        "prompt_tokens": 2258,
+        "prompt_shortfall": 1742,
+        "vram_used_mb": 2201,
+        "vram_over_idle_mb": 102,
+        "prefill_s": 0.886,
+        "gen_s": 0.18,
+        "tokens_per_sec": 61.1
+      },
+      {
+        "target_tokens": 6000,
+        "ok": true,
+        "prompt_tokens": 3258,
+        "prompt_shortfall": 2742,
+        "vram_used_mb": 2243,
+        "vram_over_idle_mb": 144,
+        "prefill_s": 1.252,
+        "gen_s": 1.046,
+        "tokens_per_sec": 61.2
+      },
+      {
+        "target_tokens": 8000,
+        "ok": true,
+        "prompt_tokens": 4258,
+        "prompt_shortfall": 3742,
+        "vram_used_mb": 2285,
+        "vram_over_idle_mb": 186,
+        "prefill_s": 1.685,
+        "gen_s": 0.199,
+        "tokens_per_sec": 55.3
+      },
+      {
+        "target_tokens": 10000,
+        "ok": true,
+        "prompt_tokens": 5258,
+        "prompt_shortfall": 4742,
+        "vram_used_mb": 2327,
+        "vram_over_idle_mb": 228,
+        "prefill_s": 2.068,
+        "gen_s": 0.192,
+        "tokens_per_sec": 57.3
+      },
+      {
+        "target_tokens": 12000,
+        "ok": true,
+        "prompt_tokens": 6258,
+        "prompt_shortfall": 5742,
+        "vram_used_mb": 2363,
+        "vram_over_idle_mb": 264,
+        "prefill_s": 2.495,
+        "gen_s": 1.132,
+        "tokens_per_sec": 56.5
+      },
+      {
+        "target_tokens": 16000,
+        "ok": true,
+        "prompt_tokens": 8258,
+        "prompt_shortfall": 7742,
+        "vram_used_mb": 2447,
+        "vram_over_idle_mb": 348,
+        "prefill_s": 3.406,
+        "gen_s": 1.196,
+        "tokens_per_sec": 53.5
+      },
+      {
+        "target_tokens": 20000,
+        "ok": true,
+        "prompt_tokens": 10258,
+        "prompt_shortfall": 9742,
+        "vram_used_mb": 2531,
+        "vram_over_idle_mb": 432,
+        "prefill_s": 4.361,
+        "gen_s": 0.217,
+        "tokens_per_sec": 50.7
+      },
+      {
+        "target_tokens": 24000,
+        "ok": true,
+        "prompt_tokens": 12258,
+        "prompt_shortfall": 11742,
+        "vram_used_mb": 2611,
+        "vram_over_idle_mb": 512,
+        "prefill_s": 5.408,
+        "gen_s": 0.224,
+        "tokens_per_sec": 49.1
+      },
+      {
+        "target_tokens": 32000,
+        "ok": true,
+        "prompt_tokens": 16258,
+        "prompt_shortfall": 15742,
+        "vram_used_mb": 2775,
+        "vram_over_idle_mb": 676,
+        "prefill_s": 7.68,
+        "gen_s": 0.262,
+        "tokens_per_sec": 42.0
+      }
+    ],
+    "realistic": {
+      "wall_s": 9.875,
+      "prompt_tokens": 2050,
+      "output_tokens": 11,
+      "prompt_eval_s": 0.903,
+      "gen_s": 0.186,
+      "response": "I should inspect the schema before writing the query.",
+      "estimated_10_step_run_s": 59.2,
+      "estimated_200_runs_hours": 3.29
+    },
+    "max_context_ok": 32000,
+    "recommended_token_budget": 25600
+  }
+]

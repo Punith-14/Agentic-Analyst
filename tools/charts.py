@@ -1,5 +1,5 @@
 # tools/charts.py
-"""Dhrub (Layer A) - Visualization Tool.
+"""Harish (Layer A) - Visualization Tool.
 Generates data charts (bar, line, scatter, histogram, pie) and saves them as PNG images.
 Returns the file path in ToolResult.data.
 """

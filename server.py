@@ -129,7 +129,7 @@ class AgentApiHandler(SimpleHTTPRequestHandler):
             tool_eval = tool_classifier_ml.evaluate_against_baseline()
             router_eval = router_ml.evaluate_against_baseline()
             data = {
-                "dhrub_tool_classifier": tool_eval,
+                "layer_a_tool_classifier": tool_eval,
                 "harish_complexity_router": router_eval
             }
             self.wfile.write(json.dumps(data).encode("utf-8"))

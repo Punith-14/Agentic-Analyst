@@ -1,0 +1,65 @@
+%% The critic in isolation — input, models, output, baseline.
+%% Use this one if the full architecture diagram is too dense for a slide.
+
+flowchart LR
+
+    subgraph SRC["Where the data comes from"]
+        direction TB
+        RUN["Agent runs<br/>40 questions x 5 attempts"]
+        TRAJ[("~200 trajectories<br/>~1600 steps")]
+        LAB["Labels<br/>0.0 / 0.5 / 1.0"]
+        RUN --> TRAJ --> LAB
+    end
+
+    subgraph INPUT["INPUT — one step"]
+        direction TB
+        I1["Question"]
+        I2["Last 3 steps of history"]
+        I3["Current thought"]
+        I4["SQL written"]
+        I5["Tool result"]
+        I6["consecutive_errors<br/>repeat_count<br/>n_joins · n_tables<br/>rows_returned<br/>schema_inspected_before"]
+    end
+
+    LAB --> INPUT
+
+    M1["<b>LightGBM</b><br/>features only<br/><i>cannot read SQL</i><br/>ABLATION"]
+    M2["<b>ModernBERT</b><br/>fine-tuned on text<br/><i>reads the query</i><br/>MAIN RESULT"]
+
+    I6 --> M1
+    I1 --> M2
+    I2 --> M2
+    I3 --> M2
+    I4 --> M2
+    I5 --> M2
+
+    subgraph OUTPUT["OUTPUT"]
+        direction TB
+        O["Score 0.0 to 1.0"]
+        O1["1.0 — good step"]
+        O05["0.5 — exploratory<br/><i>failed but recoverable</i>"]
+        O0["0.0 — bad step"]
+        O --> O1
+        O --> O05
+        O --> O0
+    end
+
+    M1 --> O
+    M2 --> O
+
+    USE1["Early stopping<br/><i>kill a doomed run at step 3<br/>instead of step 10</i>"]
+    O --> USE1
+
+    BASE["<b>BASELINE</b><br/>LLM-as-judge"]
+    CMP["<b>COMPARISON</b><br/>PR-AUC<br/>precision at threshold<br/>latency per judgement<br/>mean steps per run"]
+
+    O --> CMP
+    BASE --> CMP
+
+    classDef trained fill:#e8f5e9,stroke:#4c8c50,stroke-width:2px
+    classDef store fill:#fff4e5,stroke:#c98b2e
+    classDef io fill:#ffffff,stroke:#333
+
+    class M1,M2 trained
+    class TRAJ store
+    class BASE,CMP,USE1 io

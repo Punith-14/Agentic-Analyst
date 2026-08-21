@@ -1,19 +1,30 @@
-# Core Contracts & Validation
-pydantic>=2.5.0
+# Project 23 — Agentic Analyst
+# Combined requirements for contracts, tools, agent loop, orchestration, and UI server
 
-# Testing
-pytest>=7.4.0
+# --- contracts & validation -------------------------------------------
+pydantic>=2.6,<3
 
-# Numerical, Statistics & ML Tools
-numpy>=1.24.0
+# --- data prep, analysis & ML -----------------------------------------
+pandas>=2.0
+numpy>=1.24
 scipy>=1.10.0
-pandas>=2.0.0
 scikit-learn>=1.3.0
 joblib>=1.3.0
 
-# Visualization
-matplotlib>=3.7.0
+# --- notebooks & plots ------------------------------------------------
+matplotlib>=3.7
+seaborn>=0.13
+jupyterlab>=4.1
+ipykernel>=6.29
 
-# Orchestration & Graphs
+# --- utilities --------------------------------------------------------
+python-dotenv>=1.0        # .env handling
+tqdm>=4.66                # progress bars
+tiktoken>=0.6             # real token counting
+
+# --- orchestration ----------------------------------------------------
 langgraph>=0.0.10
 langchain-core>=0.1.0
+
+# --- testing ----------------------------------------------------------
+pytest>=7.4.0

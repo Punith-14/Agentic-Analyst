@@ -1,5 +1,5 @@
 # tools/stubs.py
-"""Dhrub (Layer A) - Contract 7: Stub Tools.
+"""Harish (Layer A) - Contract 7: Stub Tools.
 Ships early so B, C, and D can build and test against fixed ToolResult shapes.
 Includes forced-failure paths for testing error recovery.
 """

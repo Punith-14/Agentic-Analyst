@@ -1,0 +1,103 @@
+%% Sub-problem B — ReAct Agent Core, Trajectory Logger, Learned Critic
+%% Punith KM · Project 23 · Team Mind Matrix
+
+flowchart TB
+
+    USER([User question<br/>natural language]) --> PB
+
+    subgraph CORE["1 — ReAct AGENT CORE"]
+        direction TB
+
+        PB["Prompt Builder<br/><i>question + tools + table names<br/>+ worked example + history</i>"]
+        LLM["Qwen2.5-Coder-3B<br/>4-bit · local · FROZEN<br/><i>never trained</i>"]
+        PARSE["Action Parser<br/><i>two-pass, unconstrained<br/>+ one repair attempt</i>"]
+        DECIDE{"Action<br/>type?"}
+        EXEC["Tool Dispatch"]
+        OBS["Observation<br/><i>ToolResult: status, data,<br/>error_category, hint</i>"]
+        GUARD{"Guards<br/><i>max steps · token budget<br/>repeat · 3 errors</i>"}
+
+        PB --> LLM --> PARSE --> DECIDE
+        DECIDE -- "tool call" --> EXEC
+        EXEC --> OBS
+        OBS --> GUARD
+        GUARD -- "continue" --> PB
+    end
+
+    TOOLS[("Layer A — Tools<br/>run_sql · get_schema<br/>python_repl")]
+    DB[("SQLite<br/>read-only")]
+
+    EXEC <--> TOOLS
+    TOOLS <--> DB
+
+    DECIDE -- "final_answer" --> ANS([Answer to user])
+    GUARD -- "stop" --> TERM["Termination reason<br/><i>9 kinds: final_answer,<br/>max_iterations, repeated_action,<br/>parse_failure, critic_stop ...</i>"]
+    TERM --> ANS
+
+    subgraph LOG["2 — TRAJECTORY LOGGER"]
+        direction TB
+        STEP["TrajectoryStep<br/><i>thought · action · observation<br/>error counts · retry flags<br/>tokens · rows · joins</i>"]
+        JSONL[("data/trajectories/*.jsonl<br/><b>append-only · never delete</b>")]
+        STEP --> JSONL
+    end
+
+    OBS -.->|"every step"| STEP
+    TERM -.-> STEP
+
+    JSONL ==>|"training data"| CRITIC
+    JSONL -.->|"tool-selection classifier"| A_ML["Layer A model"]
+    JSONL -.->|"retrieval embeddings"| C_ML["Layer C model"]
+    JSONL -.->|"complexity router"| D_ML["Layer D model"]
+
+    subgraph LABEL["3 — LABELLING PIPELINE"]
+        direction LR
+        L1["Tier 1<br/>execution signal<br/><i>free</i>"]
+        L2["Tier 2<br/>answer vs gold SQL<br/><i>free</i>"]
+        L3["Tier 3<br/>LLM annotator<br/><i>ternary labels</i>"]
+        L4["Tier 4<br/>rollout labelling<br/><i>validates Tier 3</i>"]
+        L1 --> L3
+        L2 --> L3
+        L3 --> L4
+    end
+
+    JSONL --> L1
+
+    subgraph CRITIC["4 — LEARNED TRAJECTORY CRITIC · my ML component"]
+        direction TB
+
+        IN["<b>INPUT — one step</b><br/>question · last 3 steps<br/>current thought + SQL + result<br/>consecutive_errors · repeat_count<br/>n_joins · rows_returned<br/>schema_inspected_before"]
+
+        M1["<b>Model 1 — LightGBM</b><br/><i>numeric features only</i><br/>cannot read SQL<br/>ABLATION"]
+        M2["<b>Model 2 — ModernBERT</b><br/><i>fine-tuned on step text</i><br/>reads the query<br/>MAIN RESULT"]
+
+        OUT["<b>OUTPUT — score 0.0 to 1.0</b><br/>1.0 good step<br/>0.5 exploratory, recoverable<br/>0.0 bad step"]
+
+        CAL["Platt calibration<br/><i>threshold at 95% precision</i>"]
+
+        IN --> M1 --> OUT
+        IN --> M2 --> OUT
+        OUT --> CAL
+    end
+
+    L3 ==>|"labels"| M1
+    L3 ==>|"labels"| M2
+    L4 -.->|"agreement check"| M2
+
+    BASE["<b>BASELINE</b><br/>LLM-as-judge<br/><i>different model from the agent,<br/>to avoid self-preference bias</i>"]
+    METRIC["<b>COMPARED ON</b><br/>PR-AUC · precision · recall<br/>latency per judgement<br/>steps saved per run"]
+
+    CAL --> METRIC
+    BASE --> METRIC
+
+    CAL ==>|"early stopping"| GUARD
+
+    classDef frozen fill:#eef2f7,stroke:#5b7fa6,stroke-width:1px
+    classDef trained fill:#e8f5e9,stroke:#4c8c50,stroke-width:2px
+    classDef store fill:#fff4e5,stroke:#c98b2e,stroke-width:1px
+    classDef other fill:#f5f5f5,stroke:#999,stroke-dasharray:4 3
+    classDef io fill:#ffffff,stroke:#333,stroke-width:1px
+
+    class LLM frozen
+    class M1,M2,CAL trained
+    class JSONL,DB,TOOLS store
+    class A_ML,C_ML,D_ML other
+    class IN,OUT,METRIC,BASE io
