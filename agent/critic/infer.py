@@ -1,56 +1,259 @@
-# agent/critic/infer.py
-"""Punith (Layer B) - Learned Trajectory Critic Inference Module.
-Scores trajectory steps and recommends early stopping to cut unnecessary steps.
+"""Scores a live trajectory step so the loop can stop a doomed run early.
+
+    from agent.critic.infer import CriticScorer
+    critic = CriticScorer.load()
+    p_fail = critic.score(question, steps)      # steps so far, newest last
+
+Returns P(this run ends with a wrong answer), from the models trained in
+notebooks 02 and 05:
+
+    0.7 * LightGBM(25 numeric features)  +  0.3 * ModernBERT(step text)
+
+Measured on 1,030 held-out steps: PR-AUC 0.9845, against 0.9819 for LightGBM
+alone. The two disagree more than they agree about *which* steps are bad
+(r = 0.735), which is why both are here — the text model catches queries that
+run cleanly and answer the wrong question, and no count of joins can see that.
+
+THE THING THAT WILL BREAK THIS
+Train/serve skew. The models were fitted on rows produced by
+scripts/label_dataset.py from logged JSONL. Here the rows come from live
+TrajectoryStep objects. If those two paths disagree about even one column, the
+model gets garbage in a shifted column and predicts confidently wrong — with no
+error anywhere. _step_to_row() below mirrors label_dataset.flatten() field for
+field, and tests/test_critic_infer.py checks the two paths agree numerically on
+real logged steps. Change one, change the other.
+
+NEVER RAISES. A critic that crashes the agent is worse than no critic, so every
+public method swallows its own failures and falls back to "don't stop".
 """
-from typing import List
+
+from __future__ import annotations
+
+import warnings
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional, Sequence
+
+import pandas as pd
+
+from agent.critic.tabular import engineer
+from agent.critic.text import build_text
 from contracts import TrajectoryStep
 
-class Critic:
-    """Learned Trajectory Critic (Punith's ML Component).
-    Scores step quality (0.0 - 1.0) and decides if the run should terminate early.
+ROOT = Path(__file__).resolve().parent.parent.parent
+MODELS = ROOT / "models"
+
+# Chosen in notebook 02: the smallest threshold giving 95% precision on the
+# "stop" decision. Stopping a healthy run destroys an answer; letting a doomed
+# one finish wastes a few seconds. The two errors are not equally expensive.
+DEFAULT_THRESHOLD = 0.694
+
+# From notebook 05. The text model is the minority voice deliberately: it is
+# less accurate alone (0.9741 vs 0.9819) but sees a failure class the feature
+# model cannot.
+W_LGBM, W_BERT = 0.7, 0.3
+
+
+def _step_to_row(question: str, step: TrajectoryStep) -> dict:
+    """One TrajectoryStep -> the columns label_dataset.flatten() produces.
+
+    Only the fields engineer() and build_text() actually read. Kept in the
+    same order as flatten() so the two are diffable by eye.
     """
-    version: str = "v1.0-deberta-critic"
+    a = step.action
+    obs = step.observation
+    return {
+        "step_index": step.step_index,
+        "question": question,
+        "thought": step.thought,
+        "tool": a.tool if a else None,
+        "sql": (a.args.get("query", "") if a and a.tool == "run_sql" else ""),
+        "status": step.status,
+        "obs_rows": obs.row_count if obs else None,
+        "obs_truncated": obs.truncated if obs else False,
+        "obs_error": obs.error if obs else None,
+        "error_category": step.error_category,
+        "consecutive_errors": step.consecutive_errors,
+        "total_errors_so_far": step.total_errors_so_far,
+        "parse_repair_count": step.parse_repair_count,
+        "schema_inspected_before": step.schema_inspected_before,
+        "tokens_in_prompt": step.tokens_in_prompt,
+        "duration_ms": step.duration_ms,
+    }
 
-    def __init__(self, version: str = "v1.0-deberta-critic"):
-        self.version = version
 
-    def score_step(self, history: List[TrajectoryStep], step: TrajectoryStep) -> float:
-        """Score a single trajectory step between 0.0 (detrimental) and 1.0 (optimal).
-        Exploratory recovery steps are scored 0.5 as required by contract.
+@dataclass
+class CriticScorer:
+    lgbm: object = None
+    bert: object = None
+    tokenizer: object = None
+    device: str = "cpu"
+    text_format: str = "full_err"
+    max_len: int = 256
+    w_lgbm: float = W_LGBM
+    w_bert: float = W_BERT
+
+    # ------------------------------------------------------------------
+    # loading
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def load(cls, lgbm_path: Path | None = None, bert_dir: Path | None = None,
+             use_text: bool = True, device: str | None = None) -> "CriticScorer":
+        """Load whatever is available. Missing models degrade, they don't raise.
+
+        use_text=False skips the 600 MB text model entirely — worth it when the
+        GPU is already hosting the language model, which on a 6 GB card it is.
         """
-        # If observation is successful and has meaningful data
-        if step.observation:
-            if step.observation.status == "ok":
-                # High score if schema found or SQL returned rows
-                if step.observation.data:
-                    return 0.95
-                return 0.80
-            elif step.observation.status == "error":
-                # Check if error has recovery hint (exploratory recovery step -> 0.5)
-                if step.observation.hint:
-                    return 0.50
-                return 0.20
+        import joblib
 
-        # Action is final answer
-        if step.action and step.action.is_final:
-            return 1.00
+        self = cls()
 
-        return 0.70
+        lgbm_path = lgbm_path or (MODELS / "critic_lgbm_v1.joblib")
+        if lgbm_path.exists():
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")     # sklearn version chatter
+                self.lgbm = joblib.load(lgbm_path)
 
-    def should_stop(self, history: List[TrajectoryStep]) -> bool:
-        """Determine whether the trajectory should terminate early due to degradation."""
-        if not history:
-            return False
+        if use_text:
+            bert_dir = bert_dir or self._best_bert_dir()
+            if bert_dir and bert_dir.exists():
+                try:
+                    import json
 
-        # Guard 1: Three consecutive low-scoring steps
-        if len(history) >= 3:
-            recent_scores = [self.score_step(history[:i], history[i]) for i in range(len(history)-3, len(history))]
-            if all(s < 0.3 for s in recent_scores):
-                return True
+                    import torch
+                    from transformers import (AutoModelForSequenceClassification,
+                                              AutoTokenizer)
 
-        # Guard 2: Excessive repeated actions
-        last_step = history[-1]
-        if last_step.repeat_count >= 2:
-            return True
+                    meta_path = bert_dir / "meta.json"
+                    if meta_path.exists():
+                        meta = json.loads(meta_path.read_text())
+                        self.text_format = meta.get("format", self.text_format)
+                        self.max_len = meta.get("max_len", self.max_len)
 
-        return False
+                    self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+                    self.tokenizer = AutoTokenizer.from_pretrained(str(bert_dir))
+                    self.bert = (AutoModelForSequenceClassification
+                                 .from_pretrained(str(bert_dir))
+                                 .to(self.device).eval())
+                except Exception as e:                          # noqa: BLE001
+                    print(f"  critic: text model unavailable ({type(e).__name__}: {e}); "
+                          f"falling back to features only")
+
+        # Reweight rather than silently under-scoring if one model is absent.
+        if self.lgbm is None and self.bert is None:
+            raise FileNotFoundError(
+                f"no critic models found in {MODELS}. Train one first:\n"
+                f"  notebooks/02_critic_models.ipynb  (LightGBM)\n"
+                f"  python scripts/train_bert.py      (text)")
+        if self.bert is None:
+            self.w_lgbm, self.w_bert = 1.0, 0.0
+        elif self.lgbm is None:
+            self.w_lgbm, self.w_bert = 0.0, 1.0
+
+        return self
+
+    @staticmethod
+    def _best_bert_dir() -> Optional[Path]:
+        """Highest validation PR-AUC among trained text critics.
+
+        Several training runs leave several directories. Picking the first one
+        alphabetically is how a 3-second smoke-test model ends up deployed.
+        """
+        import json
+
+        best, best_score = None, -1.0
+        for d in sorted(MODELS.glob("critic_bert_*")):
+            meta = d / "meta.json"
+            if not meta.exists():
+                continue
+            try:
+                score = json.loads(meta.read_text()).get("val_pr_auc", -1)
+            except Exception:                                   # noqa: BLE001
+                continue
+            if score > best_score:
+                best, best_score = d, score
+        return best
+
+    @property
+    def version(self) -> str:
+        parts = []
+        if self.lgbm is not None:
+            parts.append(f"lgbm{self.w_lgbm:g}")
+        if self.bert is not None:
+            parts.append(f"bert{self.w_bert:g}")
+        return "+".join(parts) or "none"
+
+    # ------------------------------------------------------------------
+    # scoring
+    # ------------------------------------------------------------------
+
+    def score(self, question: str, steps: Sequence[TrajectoryStep]) -> Optional[float]:
+        """P(this run ends wrong), judged at the most recent step.
+
+        None means "no opinion" — the caller must treat that as don't-stop.
+        """
+        if not steps:
+            return None
+        try:
+            return self._score(question, steps[-1])
+        except Exception as e:                                  # noqa: BLE001
+            # A broken critic must not take down a run that was going fine.
+            print(f"  critic: scoring failed ({type(e).__name__}: {e}) — continuing")
+            return None
+
+    def _score(self, question: str, step: TrajectoryStep) -> float:
+        row = _step_to_row(question, step)
+        df = pd.DataFrame([row])
+
+        p_lgbm = p_bert = None
+
+        if self.lgbm is not None:
+            X = engineer(df)
+            p_lgbm = float(self.lgbm.predict_proba(X)[0, 1])
+
+        if self.bert is not None:
+            p_bert = self._score_text(build_text(row, self.text_format))
+
+        if p_lgbm is None:
+            return p_bert
+        if p_bert is None:
+            return p_lgbm
+        return self.w_lgbm * p_lgbm + self.w_bert * p_bert
+
+    def _score_text(self, text: str) -> float:
+        import torch
+
+        with torch.no_grad():
+            enc = self.tokenizer(text, truncation=True, max_length=self.max_len,
+                                 return_tensors="pt").to(self.device)
+            logits = self.bert(**enc).logits
+            return float(torch.softmax(logits, dim=1)[0, 1].cpu())
+
+    def score_frame(self, df: pd.DataFrame) -> pd.Series:
+        """Batch scoring for offline replay — same maths, no Python loop.
+
+        Used by scripts/measure_early_stop.py, which scores 5,461 steps and
+        would take minutes one at a time.
+        """
+        p = pd.Series(0.0, index=df.index)
+
+        if self.lgbm is not None:
+            p += self.w_lgbm * self.lgbm.predict_proba(engineer(df))[:, 1]
+
+        if self.bert is not None:
+            import numpy as np
+            import torch
+
+            texts = [build_text(r, self.text_format) for _, r in df.iterrows()]
+            out = []
+            with torch.no_grad():
+                for i in range(0, len(texts), 64):
+                    enc = self.tokenizer(texts[i:i + 64], truncation=True,
+                                         max_length=self.max_len, padding=True,
+                                         return_tensors="pt").to(self.device)
+                    logits = self.bert(**enc).logits
+                    out.append(torch.softmax(logits, dim=1)[:, 1].cpu().numpy())
+            p += self.w_bert * np.concatenate(out)
+
+        return p

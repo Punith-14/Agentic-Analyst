@@ -148,6 +148,12 @@ class TrajectoryStep(BaseModel):
     sql_join_count: Optional[int] = None
     schema_inspected_before: bool = False
 
+    # written live by the loop when a critic is attached: P(this run ends
+    # wrong), judged at this step from what was knowable at the time. None
+    # when no critic ran. Additive and optional, so records written before
+    # this field existed still load.
+    critic_score: Optional[float] = None
+
     # filled in by the labelling pipeline after the run
     label_execution: Optional[Literal["ok", "error", "empty"]] = None
     label_step: Optional[float] = None      # 0.0 | 0.5 | 1.0, from our rules

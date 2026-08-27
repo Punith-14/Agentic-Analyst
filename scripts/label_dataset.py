@@ -3,6 +3,11 @@
     python scripts/label_dataset.py
     python scripts/label_dataset.py --dry-run
 
+    # the chinook_1 holdout — a database the critics have never seen.
+    # Separate output file: it must never join the training table.
+    python scripts/label_dataset.py --pattern "*-holdout.jsonl" \
+        --out holdout_steps.parquet
+
 Does two things and nothing else:
 
   1. Adds a 0 / 0.5 / 1 score to every step, and a run-level failure flag.
@@ -127,6 +132,9 @@ def main() -> None:
     ap.add_argument("--exclude", nargs="*", default=["superseded"],
                     help="filename fragments to skip even if they match "
                          "--pattern; belt and braces")
+    # The holdout must never land in the training table. Separate file, always.
+    ap.add_argument("--out", default="labelled_steps.parquet",
+                    help="output filename inside data/critic/")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -178,7 +186,7 @@ def main() -> None:
         return
 
     OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / "labelled_steps.parquet"
+    path = OUT / args.out
     df.to_parquet(path, index=False)
     print(f"\n  -> {path}")
     print(f"  {len(df.columns)} columns, ready for the notebook")
