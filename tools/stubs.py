@@ -91,8 +91,14 @@ def stub_make_chart(spec: dict, **kwargs) -> ToolResult:
     return ToolResult(
         status="ok",
         tool="make_chart",
-        data={"chart_path": "data/charts/stub_chart.png", "type": spec.get("type", "bar")},
+        data={
+            "chart_path": "data/charts/stub_chart.png",
+            "type": spec.get("type", "bar"),
+            "title": spec.get("title", "Data Chart"),
+            "spec": spec
+        },
         duration_ms=45,
+        hint=f"Chart rendered successfully for '{spec.get('title', 'Data Chart')}'."
     )
 
 def stub_stats_test(kind: str = "t_test", **kwargs) -> ToolResult:
