@@ -62,10 +62,15 @@ def engineer(df: pd.DataFrame) -> pd.DataFrame:
     f["error_rate_so_far"] = df.total_errors_so_far / (df.step_index + 1)
     f["parse_repair_count"] = df.parse_repair_count
 
-    # what came back
-    f["obs_rows"] = df.obs_rows.fillna(-1)
-    f["returned_nothing"] = ((df.obs_rows == 0) & df.obs_rows.notna()).astype(int)
-    f["obs_truncated"] = df.obs_truncated.astype(int)
+    # what came back. -1 is a deliberate sentinel for "not a query", distinct
+    # from 0 meaning "a query that returned nothing" — the two say different
+    # things about the step and the tree can split on them separately.
+    # to_numeric first: obs_rows arrives as object dtype when it holds Nones,
+    # and .fillna() on object dtype is deprecated in pandas 2.x.
+    obs_rows = pd.to_numeric(df.obs_rows, errors="coerce")
+    f["obs_rows"] = obs_rows.fillna(-1)
+    f["returned_nothing"] = ((obs_rows == 0) & obs_rows.notna()).astype(int)
+    f["obs_truncated"] = df.obs_truncated.fillna(False).astype(bool).astype(int)
 
     # query shape — describes the SQL, never reads it. This is the gap the
     # text critic is meant to close.

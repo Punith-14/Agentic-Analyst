@@ -257,3 +257,95 @@ class CriticScorer:
             p += self.w_bert * np.concatenate(out)
 
         return p
+
+
+# ======================================================================
+# compatibility layer for orchestration/graph.py (layer D)
+# ======================================================================
+#
+# graph.py imports `Critic` and calls score_step() / should_stop(). That was
+# a hand-written rule stub; this keeps the same interface and puts the trained
+# model behind it. Do not rename or remove without telling layer D — an import
+# error here takes the whole orchestration layer down, which is how this class
+# came to exist.
+#
+# NOTE THE INVERSION. score_step() returns STEP QUALITY, where 1.0 is good —
+# that is what graph.py's best-of-N selection assumes when it picks the higher
+# score. CriticScorer.score() returns P(FAIL), where 1.0 is bad. Getting this
+# backwards would silently make best-of-N choose the worse branch every time,
+# with nothing failing anywhere.
+
+_SHARED: Optional["CriticScorer"] = None
+_LOAD_FAILED = False
+
+
+def _shared_scorer() -> Optional[CriticScorer]:
+    """One scorer for the whole process.
+
+    graph.py constructs Critic() inside every node call. Loading a 600 MB
+    transformer on each of those would be ruinous, so the underlying scorer is
+    built once and reused.
+    """
+    global _SHARED, _LOAD_FAILED
+    if _SHARED is None and not _LOAD_FAILED:
+        try:
+            _SHARED = CriticScorer.load()
+        except Exception:                                       # noqa: BLE001
+            _LOAD_FAILED = True                                 # don't retry every call
+    return _SHARED
+
+
+class Critic:
+    """Layer B's critic, as layer D expects it.
+
+    Falls back to the original heuristics when no trained model is on disk —
+    a fresh clone has no models/critic_*.joblib until someone trains one, and
+    the orchestration tests must still run in CI.
+    """
+
+    def __init__(self, version: str = ""):
+        self._scorer = _shared_scorer()
+        self.version = version or (self._scorer.version if self._scorer
+                                   else "heuristic-fallback")
+
+    def score_step(self, history: Sequence[TrajectoryStep],
+                   step: TrajectoryStep) -> float:
+        """Quality of this step, 0.0 (harmful) to 1.0 (good)."""
+        if self._scorer is not None:
+            question = ""       # not available at this call site; the models
+                                # handle an empty question, it just weakens them
+            p_fail = self._scorer.score(question, list(history) + [step])
+            if p_fail is not None:
+                return 1.0 - p_fail
+        return self._heuristic_score(step)
+
+    @staticmethod
+    def _heuristic_score(step: TrajectoryStep) -> float:
+        """The original rules, kept as a fallback rather than deleted."""
+        if step.observation:
+            if step.observation.status == "ok":
+                return 0.95 if step.observation.data else 0.80
+            return 0.50 if step.observation.hint else 0.20   # recoverable vs not
+        if step.action and step.action.is_final:
+            return 1.00
+        return 0.70
+
+    def should_stop(self, history: Sequence[TrajectoryStep]) -> bool:
+        """True when this run looks doomed enough to abandon."""
+        if not history:
+            return False
+
+        # Repeating an action is pointless whether it worked before or not.
+        if history[-1].repeat_count >= 2:
+            return True
+
+        if self._scorer is not None:
+            p_fail = self._scorer.score("", list(history))
+            if p_fail is not None:
+                return p_fail > DEFAULT_THRESHOLD
+
+        # Fallback: three consecutive poor steps.
+        if len(history) >= 3:
+            recent = [self._heuristic_score(s) for s in history[-3:]]
+            return all(s < 0.3 for s in recent)
+        return False
