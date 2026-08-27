@@ -69,11 +69,15 @@ checkpoints/
 *.onnx
 
 # Fine-tuned text critics: ~270 MB for distilbert, ~600 MB for ModernBERT.
-# Reproduce with `python scripts/train_bert.py`; the config that produced
-# each one is recorded in its meta.json, which is what actually matters.
-# Ignoring the whole directory rather than just the weights, so we don't
-# commit a model folder with the weights stripped out of it.
-models/critic_bert_*/
+# The weights stay out — `python scripts/train_bert.py` rebuilds them in a
+# few minutes.
+models/critic_bert_*/*
+
+# ...but meta.json IS committed. 2 KB recording the model id, input format,
+# max_len, learning rate, epochs, seed and validation score behind each
+# result. The weights are reproducible; the record of what was actually run
+# is not, and it is the thing that makes a reported number checkable.
+!models/critic_bert_*/meta.json
 
 # --- os / editor -----------------------------------------------------
 .DS_Store

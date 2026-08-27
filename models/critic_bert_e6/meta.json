@@ -1,0 +1,17 @@
+{
+  "model_id": "answerdotai/ModernBERT-base",
+  "format": "full_err",
+  "max_len": 256,
+  "batch_size": 19,
+  "lr": 2e-05,
+  "epochs": 6,
+  "seed": 23,
+  "train_steps": 3587,
+  "val_steps": 610,
+  "train_runs": 1029,
+  "val_pr_auc": 0.9474,
+  "val_roc_auc": 0.878,
+  "val_base_rate": 0.7426,
+  "minutes": 6.4,
+  "note": "test set NOT scored here \u2014 see notebooks/05_critic_comparison.ipynb"
+}
