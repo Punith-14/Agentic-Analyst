@@ -284,6 +284,9 @@ def agent_step(state: dict) -> dict:
             calc_val = prev.observation.data if prev.observation else "N/A"
             thought = "Formatting calculator result."
             action = Action(tool="python_repl", args={"code": "# calc"}, is_final=True, final_answer=f"Calculation result: {calc_val}")
+        elif q_lower.strip().startswith(("select", "with", "explain", "insert", "update", "delete", "create", "drop", "alter")):
+            thought = "Executing direct SQL query."
+            action = Action(tool="run_sql", args={"query": question.strip()}, is_final=False)
         elif any(w in q_lower for w in ["chart", "plot", "graph", "visualize"]):
             thought = "Generating chart visualization from SQLite analytical data."
             if "segment" in q_lower or "customer" in q_lower:
@@ -332,7 +335,7 @@ def agent_step(state: dict) -> dict:
         elif "cluster" in q_lower:
             thought = "Clustering orders using KMeans."
             action = Action(tool="ml_cluster", args={"table": "orders", "features": ["sales", "profit"], "k": 3}, is_final=False)
-        elif "customer" in q_lower and ("hardware" in q_lower or "2024" in q_lower or "join" in q_lower):
+        elif "hardware" in q_lower and "2024" in q_lower:
             thought = "Executing multi-table SQL join query across customers, orders, and products."
             action = Action(tool="run_sql", args={"query": "SELECT c.customer_name, c.segment, p.product_name, p.category, o.sales AS revenue, o.date FROM customers c JOIN orders o ON c.customer_id = o.customer_id JOIN products p ON o.product_id = p.product_id WHERE p.category = 'Hardware' AND strftime('%Y', o.date) = '2024';"}, is_final=False)
         elif "enterprise" in q_lower and "profit" in q_lower:
@@ -347,9 +350,6 @@ def agent_step(state: dict) -> dict:
         elif "highest" in q_lower or "total sales" in q_lower:
             thought = "Executing SQL aggregation query for total sales by region."
             action = Action(tool="run_sql", args={"query": "SELECT region, SUM(sales) AS total_sales FROM orders WHERE strftime('%Y', date)='2023' GROUP BY region ORDER BY total_sales DESC LIMIT 1;"}, is_final=False)
-        elif q_lower.strip().startswith("select"):
-            thought = "Executing direct SQL query."
-            action = Action(tool="run_sql", args={"query": question.strip()}, is_final=False)
         else:
             thought = "Executing SQL analytical query."
             action = Action(tool="run_sql", args={"query": "SELECT * FROM orders LIMIT 10;"}, is_final=False)
@@ -362,25 +362,36 @@ def agent_step(state: dict) -> dict:
             thought = "Synthesizing retrieved data into natural language response."
             if isinstance(data, list) and data:
                 top = data[0]
-                if "customer_name" in top:
-                    customers = [row.get("customer_name") for row in data if "customer_name" in row]
-                    segments = list({row.get("segment") for row in data if "segment" in row})
-                    total_rev = sum(float(row.get("revenue") or row.get("total_revenue") or 0) for row in data)
-                    c_str = ", ".join(f"'{c}'" for c in customers)
-                    seg_str = ", ".join(segments) if segments else "SMB"
-                    rev_str = f"${total_rev:,.2f}" if total_rev > 0 else "$54,000.00"
+                if isinstance(top, dict) and "customer_name" in top and "category" in top and ("revenue" in top or "sales" in top or "total_revenue" in top) and any(str(row.get("category", "")).lower() == "hardware" for row in data):
+                    customers = sorted({str(row.get("customer_name")) for row in data if row.get("customer_name")})
+                    segments = sorted({str(row.get("segment")) for row in data if row.get("segment")})
+                    total_rev = sum(float(row.get("revenue") or row.get("sales") or row.get("total_revenue") or 0) for row in data)
+                    c_str = ", ".join(f"'{c}'" for c in customers) if customers else "None"
+                    seg_str = ", ".join(segments) if segments else "N/A"
+                    rev_str = f"${total_rev:,.2f}"
                     ans = f"Customers purchasing Hardware products in 2024: {c_str} (Segment: {seg_str}) with total revenue of {rev_str}."
-                elif "total_profit" in top:
-                    ans = f"Enterprise customers generated a total profit of ${top['total_profit']:,.2f} in 2023."
-                elif "category" in top and "total_revenue" in top:
-                    ans = f"The product category '{top['category']}' produced the highest total revenue of ${top['total_revenue']:,.2f}."
-                elif "manager" in top and "region_name" in top:
-                    ans = f"The manager for '{top['region_name']}' (lowest sales in 2023 with ${top.get('total_sales', 0):,.2f}) is {top['manager']}."
-                elif "total_sales" in top and "region" in top:
-                    ans = f"The region '{top['region']}' recorded highest total sales of ${top['total_sales']:,.2f} in 2023."
-                else:
+                elif isinstance(top, dict) and "customer_name" in top:
+                    customers = sorted({str(row.get("customer_name")) for row in data if row.get("customer_name")})
+                    segments = sorted({str(row.get("segment")) for row in data if row.get("segment")})
+                    c_str = ", ".join(f"'{c}'" for c in customers) if customers else "None"
+                    if segments:
+                        seg_str = ", ".join(segments)
+                        ans = f"Retrieved {len(customers)} customer(s): {c_str} across segment(s): {seg_str}."
+                    else:
+                        ans = f"Retrieved {len(customers)} customer(s): {c_str}."
+                elif isinstance(top, dict) and "total_profit" in top:
+                    ans = f"Enterprise customers generated a total profit of ${float(top['total_profit']):,.2f} in 2023."
+                elif isinstance(top, dict) and "category" in top and "total_revenue" in top:
+                    ans = f"The product category '{top['category']}' produced the highest total revenue of ${float(top['total_revenue']):,.2f}."
+                elif isinstance(top, dict) and "manager" in top and "region_name" in top:
+                    ans = f"The manager for '{top['region_name']}' (lowest sales in 2023 with ${float(top.get('total_sales', 0)):,.2f}) is {top['manager']}."
+                elif isinstance(top, dict) and "total_sales" in top and "region" in top:
+                    ans = f"The region '{top['region']}' recorded highest total sales of ${float(top['total_sales']):,.2f} in 2023."
+                elif isinstance(top, dict):
                     items_str = ", ".join(f"{k}: {v}" for k, v in top.items())
                     ans = f"Query executed successfully with {len(data)} record(s). Result: {items_str}."
+                else:
+                    ans = f"Query executed successfully with {len(data)} record(s). Result: {data}."
             elif isinstance(data, dict) and ("chart_path" in data or "spec" in data):
                 chart_title = data.get("title") or (data.get("spec") or {}).get("title") or "Data Visualization"
                 chart_type = data.get("type") or (data.get("spec") or {}).get("type") or "chart"

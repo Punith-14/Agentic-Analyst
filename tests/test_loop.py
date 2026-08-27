@@ -373,3 +373,153 @@ def test_record_serialises_and_round_trips():
     restored = RunRecord.model_validate_json(rec.model_dump_json())
     assert restored.run_id == rec.run_id
     assert len(restored.steps) == len(rec.steps)
+
+
+# ==========================================================================
+# agent_step routing & synthesis
+# ==========================================================================
+
+
+def test_agent_step_direct_sql_priority():
+    """Direct SQL starting with SELECT should execute directly, not hit keyword routes."""
+    from agent.loop import agent_step
+    from contracts import Action, ToolResult, TrajectoryStep
+
+    state = {
+        "question": "SELECT customer_name, segment FROM customers WHERE segment = 'Enterprise';",
+        "steps": [
+            TrajectoryStep(
+                run_id="test-1",
+                step_index=0,
+                thought="Inspecting schema",
+                action=Action(tool="get_schema", args={}),
+                observation=ToolResult(status="ok", tool="get_schema", data={}),
+            )
+        ],
+    }
+    res = agent_step(state)
+    last_step = res["steps"][-1]
+    assert last_step.action.tool == "run_sql"
+    assert last_step.action.args["query"] == "SELECT customer_name, segment FROM customers WHERE segment = 'Enterprise';"
+
+
+def test_agent_step_hardware_2024_join_routing():
+    """Hardware + 2024 intent triggers the 3-table join."""
+    from agent.loop import agent_step
+    from contracts import Action, ToolResult, TrajectoryStep
+
+    state = {
+        "question": "List all customers who purchased Hardware products in 2024",
+        "steps": [
+            TrajectoryStep(
+                run_id="test-2",
+                step_index=0,
+                thought="Inspecting schema",
+                action=Action(tool="get_schema", args={}),
+                observation=ToolResult(status="ok", tool="get_schema", data={}),
+            )
+        ],
+    }
+    res = agent_step(state)
+    last_step = res["steps"][-1]
+    assert last_step.action.tool == "run_sql"
+    assert "Hardware" in last_step.action.args["query"]
+    assert "2024" in last_step.action.args["query"]
+
+
+def test_agent_step_generic_customer_not_hardware_join():
+    """Generic customer question without hardware does NOT trigger Hardware join."""
+    from agent.loop import agent_step
+    from contracts import Action, ToolResult, TrajectoryStep
+
+    state = {
+        "question": "Show customers in 2024",
+        "steps": [
+            TrajectoryStep(
+                run_id="test-3",
+                step_index=0,
+                thought="Inspecting schema",
+                action=Action(tool="get_schema", args={}),
+                observation=ToolResult(status="ok", tool="get_schema", data={}),
+            )
+        ],
+    }
+    res = agent_step(state)
+    last_step = res["steps"][-1]
+    assert last_step.action.tool == "run_sql"
+    assert "Hardware" not in last_step.action.args.get("query", "")
+
+
+def test_agent_step_synthesis_hardware_join_dedupes_and_calculates():
+    """Hardware join synthesis dedupes customer names, sorts segments, and sums revenue correctly."""
+    from agent.loop import agent_step
+    from contracts import Action, ToolResult, TrajectoryStep
+
+    data = [
+        {"customer_name": "Apex Solutions", "segment": "SMB", "product_name": "Data Pipeline Server", "category": "Hardware", "revenue": 54000.0, "date": "2024-05-18"},
+        {"customer_name": "Apex Solutions", "segment": "SMB", "product_name": "Edge Compute Gateway", "category": "Hardware", "revenue": 1800.0, "date": "2024-06-20"},
+    ]
+    state = {
+        "question": "List all customers who purchased Hardware products in 2024",
+        "steps": [
+            TrajectoryStep(
+                run_id="test-4",
+                step_index=0,
+                thought="Inspecting schema",
+                action=Action(tool="get_schema", args={}),
+                observation=ToolResult(status="ok", tool="get_schema", data={}),
+            ),
+            TrajectoryStep(
+                run_id="test-4",
+                step_index=1,
+                thought="Running join",
+                action=Action(tool="run_sql", args={"query": "SELECT ..."}),
+                observation=ToolResult(status="ok", tool="run_sql", data=data),
+            ),
+        ],
+    }
+    res = agent_step(state)
+    ans = res["final_answer"]
+    assert "Hardware products in 2024" in ans
+    assert ans.count("'Apex Solutions'") == 1  # deduped
+    assert "$55,800.00" in ans  # correct sum
+    assert "SMB" in ans
+
+
+def test_agent_step_synthesis_generic_customer_not_mislabeled():
+    """Generic customer results should not be mislabeled as Hardware 2024 join."""
+    from agent.loop import agent_step
+    from contracts import Action, ToolResult, TrajectoryStep
+
+    data = [
+        {"customer_name": "TechCorp Global", "segment": "Enterprise"},
+        {"customer_name": "Apex Solutions", "segment": "SMB"},
+    ]
+    state = {
+        "question": "SELECT customer_name, segment FROM customers;",
+        "steps": [
+            TrajectoryStep(
+                run_id="test-5",
+                step_index=0,
+                thought="Inspecting schema",
+                action=Action(tool="get_schema", args={}),
+                observation=ToolResult(status="ok", tool="get_schema", data={}),
+            ),
+            TrajectoryStep(
+                run_id="test-5",
+                step_index=1,
+                thought="Executing direct SQL",
+                action=Action(tool="run_sql", args={"query": "SELECT customer_name, segment FROM customers;"}),
+                observation=ToolResult(status="ok", tool="run_sql", data=data),
+            ),
+        ],
+    }
+    res = agent_step(state)
+    ans = res["final_answer"]
+    assert "Hardware" not in ans
+    assert "2024" not in ans
+    assert "$54,000.00" not in ans
+    assert "Retrieved 2 customer(s)" in ans
+    assert "'Apex Solutions'" in ans
+    assert "'TechCorp Global'" in ans
+
