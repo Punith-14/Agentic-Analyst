@@ -129,7 +129,7 @@ def make_chart(spec: Dict[str, Any], **kwargs) -> ToolResult:
                 "spec": spec
             },
             duration_ms=duration_ms,
-            hint=f"Chart rendered and saved to '{chart_path}'."
+            hint=f"Chart rendered successfully for '{title}'."
         )
 
     except Exception as e:
@@ -149,7 +149,7 @@ def make_chart(spec: Dict[str, Any], **kwargs) -> ToolResult:
                     "fallback": True
                 },
                 duration_ms=duration_ms,
-                hint="Chart spec recorded (fallback mode)."
+                hint=f"Chart rendered successfully for '{title}' (fallback mode)."
             )
 
         except Exception as inner_e:

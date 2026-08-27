@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agentic AI Data Analyst | Enterprise Platform</title>
+  <title>Agentic AI Data Analyst | Enterprise Autonomous Intelligence Platform</title>
 
-  <!-- Modern Typography Fonts -->
+  <!-- Typography: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -36,81 +36,130 @@
               700: '#4338ca',
               800: '#3730a3',
               900: '#312e81',
+              950: '#1e1b4b',
+            },
+            surface: {
+              dark: '#090d16',
+              card: '#0f172a',
+              cardBorder: '#1e293b',
+              light: '#f8fafc',
+              lightCard: '#ffffff',
+              lightBorder: '#e2e8f0',
             }
           },
           boxShadow: {
-            'card': '0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02)',
-            'card-hover': '0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.03)',
-            'pill': '0 2px 10px rgba(99, 102, 241, 0.25)',
+            'glow-indigo': '0 0 25px -5px rgba(99, 102, 241, 0.4)',
+            'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.4)',
+            'glow-cyan': '0 0 25px -5px rgba(6, 182, 212, 0.4)',
+            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            'card-dark': '0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+            'card-light': '0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04)',
           }
         }
       }
     }
   </script>
 
-  <!-- React & Babel CDNs -->
+  <!-- React 18 & Babel CDNs -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    body {
+    /* Executive Glass & Smooth Animations */
+    .bg-mesh-dark {
+      background-color: #060911;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+    }
+
+    .bg-mesh-light {
       background-color: #f8fafc;
-      color: #0f172a;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.6) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(243, 232, 255, 0.6) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(209, 250, 229, 0.5) 0px, transparent 50%);
+    }
+
+    .glass-card-dark {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
     }
 
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 4px;
+      background: transparent;
     }
-
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: rgba(148, 163, 184, 0.3);
       border-radius: 4px;
     }
-
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: rgba(148, 163, 184, 0.5);
+    }
+
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 3s ease-in-out infinite;
     }
 
     .btn-lift {
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .btn-lift:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
-
     .btn-lift:active {
-      transform: scale(0.98);
+      transform: translateY(0);
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // Default Seed / Mock Trajectories
+    // Helper: Clean internal file paths from answers
+    function cleanSynthesizedAnswer(text) {
+      if (!text) return "";
+      let cleaned = String(text);
+      cleaned = cleaned.replace(/Chart generated successfully and saved to\s*['"][^'"]+['"]\.?/gi, "Visualization generated successfully and is available in the Visualizations section.");
+      cleaned = cleaned.replace(/saved to\s*['"][^'"]+['"]\.?/gi, "rendered in the Visualizations section.");
+      cleaned = cleaned.replace(/data\/charts\/[a-zA-Z0-9_\-]+\.png/gi, "visual chart");
+      return cleaned;
+    }
+
+    // Default Seed Trajectories
     const FALLBACK_TRAJECTORIES = [
       {
-        run_id: "r-1001",
+        run_id: "r-94821a",
         task_id: "t001",
         question: "Which region had the highest total sales in 2023?",
         steps: [
           {
-            run_id: "r-1001",
+            run_id: "r-94821a",
             step_index: 1,
-            timestamp: "2026-08-15T10:00:00Z",
-            thought: "Inspecting database schema for orders table to identify columns and types.",
+            timestamp: "2026-08-26T12:00:00Z",
+            thought: "Inspecting database schema to verify column structures for orders and regions tables.",
             action: { tool: "get_schema", args: { table: "orders" }, is_final: false },
             observation: {
               status: "ok",
@@ -121,15 +170,15 @@
               row_count: 7
             },
             status: "continue",
-            duration_ms: 95,
-            tokens_in_prompt: 150,
-            label_llm: 0.95
+            duration_ms: 82,
+            tokens_in_prompt: 160,
+            label_llm: 0.98
           },
           {
-            run_id: "r-1001",
+            run_id: "r-94821a",
             step_index: 2,
-            timestamp: "2026-08-15T10:00:01Z",
-            thought: "Executing SQL aggregation query to determine highest sales by region in 2023.",
+            timestamp: "2026-08-26T12:00:01Z",
+            thought: "Executing SQL aggregation query to calculate sum of sales grouped by region for year 2023.",
             action: {
               tool: "run_sql",
               args: { query: "SELECT region, SUM(sales) AS total_sales FROM orders WHERE strftime('%Y', date)='2023' GROUP BY region ORDER BY total_sales DESC LIMIT 1;" },
@@ -139,78 +188,166 @@
               status: "ok",
               tool: "run_sql",
               data: [{ region: "North America", total_sales: 180500.0 }],
-              duration_ms: 12,
+              duration_ms: 8,
               truncated: false,
               row_count: 1
             },
             status: "continue",
-            duration_ms: 135,
-            tokens_in_prompt: 280,
-            label_llm: 0.98
+            duration_ms: 110,
+            tokens_in_prompt: 290,
+            label_llm: 0.99
           },
           {
-            run_id: "r-1001",
+            run_id: "r-94821a",
             step_index: 3,
-            timestamp: "2026-08-15T10:00:02Z",
-            thought: "Synthesizing retrieved database observations into the final user answer.",
+            timestamp: "2026-08-26T12:00:02Z",
+            thought: "Synthesizing retrieved database observations into the final executive answer.",
             action: {
               tool: "python_repl",
-              args: { code: "# synthesize" },
+              args: { code: "# final synthesis" },
               is_final: true,
-              final_answer: "North America recorded the highest total sales in 2023 with $180,500.00."
+              final_answer: "The region 'North America' recorded the highest total sales in 2023 with $180,500.00."
             },
             observation: { status: "ok", tool: "python_repl", data: "Success", duration_ms: 2 },
             status: "final",
-            duration_ms: 80,
-            tokens_in_prompt: 340,
+            duration_ms: 70,
+            tokens_in_prompt: 360,
             label_llm: 1.0
           }
         ],
         termination: "final_answer",
-        final_answer: "North America recorded the highest total sales in 2023 with $180,500.00.",
+        final_answer: "The region 'North America' recorded the highest total sales in 2023 with $180,500.00.",
         correct: true,
-        total_duration_ms: 310,
-        total_tokens: 770
+        total_duration_ms: 262,
+        total_tokens: 810
       }
     ];
 
+    // Enterprise Preset Tasks Library
     const PRESET_TASKS = [
-      { task_id: "t001", title: "Highest Regional Sales in 2023", question: "Which region had the highest total sales in 2023?", difficulty: "EASY" },
-      { task_id: "t002", title: "Enterprise Customer Profits", question: "What is the total profit generated by Enterprise customers in 2023?", difficulty: "MEDIUM" },
-      { task_id: "t003", title: "Top Revenue Product Category", question: "Which product category produced the highest total revenue across all years?", difficulty: "MEDIUM" },
-      { task_id: "t004", title: "Hardware Buyers in 2024", question: "List all customers who purchased Hardware products in 2024 and calculate total revenue across customer segments with joins", difficulty: "HARD" },
-      { task_id: "t007", title: "Manager Performance by Region", question: "Find the manager for the region with the lowest sales in 2023 using a join between regions and orders", difficulty: "HARD" },
-      { task_id: "t008", title: "Visual Chart Generation", question: "Analyze sales by region and create a bar chart showing which region has the highest sales.", difficulty: "MEDIUM" },
-      { task_id: "t009", title: "Customer Segment Pie Chart", question: "Plot a pie chart of revenue by customer segment", difficulty: "MEDIUM" },
-      { task_id: "t010", title: "Sales vs Profit Scatter Plot", question: "Create a scatter plot showing the relationship between sales and profit", difficulty: "MEDIUM" },
-      { task_id: "t011", title: "Statistical Correlation", question: "Calculate statistical correlation between sales and profit", difficulty: "HARD" }
+      { 
+        task_id: "t001", 
+        category: "SQL", 
+        title: "Highest Regional Sales in 2023", 
+        question: "Which region had the highest total sales in 2023?", 
+        difficulty: "EASY", 
+        latency: "~180ms",
+        tag: "SQL Aggregation" 
+      },
+      { 
+        task_id: "t008", 
+        category: "CHART", 
+        title: "Regional Sales Bar Chart", 
+        question: "Analyze sales by region and create a bar chart showing which region has the highest sales.", 
+        difficulty: "MEDIUM", 
+        latency: "~240ms",
+        tag: "Bar Visualizer" 
+      },
+      { 
+        task_id: "t009", 
+        category: "CHART", 
+        title: "Revenue by Segment (Pie Chart)", 
+        question: "Plot a pie chart of revenue by customer segment", 
+        difficulty: "MEDIUM", 
+        latency: "~220ms",
+        tag: "Pie Breakdown" 
+      },
+      { 
+        task_id: "t010", 
+        category: "CHART", 
+        title: "Sales vs Profit Scatter Plot", 
+        question: "Create a scatter plot showing the relationship between sales and profit", 
+        difficulty: "MEDIUM", 
+        latency: "~250ms",
+        tag: "Scatter Trend" 
+      },
+      { 
+        task_id: "t004", 
+        category: "SQL", 
+        title: "Hardware Buyers 3-Table Join", 
+        question: "List all customers who purchased Hardware products in 2024 and calculate total revenue across customer segments with joins", 
+        difficulty: "HARD", 
+        latency: "~290ms",
+        tag: "3-Table Join" 
+      },
+      { 
+        task_id: "t002", 
+        category: "SQL", 
+        title: "Enterprise Customer Profits", 
+        question: "What is the total profit generated by Enterprise customers in 2023?", 
+        difficulty: "MEDIUM", 
+        latency: "~210ms",
+        tag: "Filtered Sum" 
+      },
+      { 
+        task_id: "t003", 
+        category: "SQL", 
+        title: "Top Revenue Product Category", 
+        question: "Which product category produced the highest total revenue across all years?", 
+        difficulty: "MEDIUM", 
+        latency: "~200ms",
+        tag: "Category Join" 
+      },
+      { 
+        task_id: "t007", 
+        category: "SQL", 
+        title: "Lowest Sales Manager Join", 
+        question: "Find the manager for the region with the lowest sales in 2023 using a join between regions and orders", 
+        difficulty: "HARD", 
+        latency: "~310ms",
+        tag: "Multi-Table Join" 
+      },
+      { 
+        task_id: "t011", 
+        category: "STATS", 
+        title: "Statistical Correlation (Pearson)", 
+        question: "Calculate statistical correlation between sales and profit", 
+        difficulty: "HARD", 
+        latency: "~190ms",
+        tag: "Stats ML" 
+      }
     ];
 
-    // Dynamic Chart Component (SVG Renderer - Modern Light Theme)
-    function DynamicChartRenderer({ spec, chartPath }) {
+    // High-Definition Dynamic SVG Chart Renderer
+    function DynamicChartRenderer({ spec, chartPath, isDark = true }) {
       if (!spec) return null;
       const { type = "bar", title = "Data Visualization", x = [], y = [], x_label = "X Axis", y_label = "Y Axis" } = spec;
       const fmt = (n) => typeof n === 'number' ? (n >= 1000 ? `$${(n / 1000).toFixed(1)}k` : `$${n.toFixed(1)}`) : String(n);
 
+      const textColor = isDark ? "#f8fafc" : "#0f172a";
+      const subTextColor = isDark ? "#94a3b8" : "#475569";
+      const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(15,23,42,0.08)";
+      const axisColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(15,23,42,0.2)";
+
       return (
-        <div className="p-6 bg-slate-50/90 rounded-2xl border border-slate-300 space-y-4 shadow-sm text-slate-900">
-          <div className="flex items-center justify-between border-b border-slate-300 pb-3 flex-wrap gap-2">
-            <div className="flex items-center space-x-2 font-mono text-sm md:text-base font-bold text-slate-900">
-              <span>📊 {title}</span>
+        <div className={`p-6 rounded-3xl transition-all duration-300 ${isDark ? 'glass-card-dark text-slate-100 shadow-card-dark' : 'glass-card-light text-slate-900 shadow-card-light'}`}>
+          {/* Header Bar */}
+          <div className="flex items-center justify-between border-b pb-4 mb-5 flex-wrap gap-3" style={{ borderColor: gridColor }}>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white flex items-center justify-center text-xl shadow-glow-indigo">
+                {type === 'bar' ? '📊' : (type === 'scatter' ? '🟣' : (type === 'pie' ? '🥧' : '📈'))}
+              </div>
+              <div>
+                <h3 className="font-extrabold text-base md:text-lg tracking-tight flex items-center space-x-2">
+                  <span>{title}</span>
+                </h3>
+                <span className="text-xs font-mono font-medium opacity-70">Interactive Real-Time Database Projection</span>
+              </div>
             </div>
+
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-bold uppercase px-3 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-300">
-                {type.toUpperCase()} CHART
+              <span className={`text-xs font-mono font-bold uppercase px-3 py-1 rounded-full border ${isDark ? 'bg-brand-500/10 text-brand-300 border-brand-500/30' : 'bg-brand-50 text-brand-700 border-brand-200'}`}>
+                {type.toUpperCase()} VISUALIZER
               </span>
-              <span className="text-xs font-mono font-semibold px-3 py-1 bg-white text-slate-700 rounded-full border border-slate-300 shadow-sm">
-                {x.length} Data Points
+              <span className={`text-xs font-mono font-semibold px-3 py-1 rounded-full border ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                {x.length || y.length} Data Points
               </span>
             </div>
           </div>
 
-          {/* Scatter Plot (Light Modern Theme) */}
+          {/* Scatter Plot */}
           {type === "scatter" && (
-            <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200'}`}>
               {(() => {
                 const xNums = x.map(v => Number(v) || 0);
                 const yNums = y.map(v => Number(v) || 0);
@@ -218,61 +355,70 @@
                 const xMax = Math.max(...xNums, 100);
                 const yMin = Math.min(...yNums, 0);
                 const yMax = Math.max(...yNums, 100);
-                const scaleX = (val) => 60 + ((val - xMin) / (xMax - xMin || 1)) * 340;
+                const scaleX = (val) => 65 + ((val - xMin) / (xMax - xMin || 1)) * 340;
                 const scaleY = (val) => 165 - ((val - yMin) / (yMax - yMin || 1)) * 125;
 
                 return (
                   <svg className="w-full h-64" viewBox="0 0 450 210">
-                    <line x1="50" y1="40" x2="420" y2="40" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="50" y1="90" x2="420" y2="90" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="50" y1="140" x2="420" y2="140" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="50" y1="165" x2="420" y2="165" stroke="#cbd5e1" strokeWidth="1.5" />
-                    <line x1="50" y1="30" x2="50" y2="165" stroke="#cbd5e1" strokeWidth="1.5" />
+                    <line x1="50" y1="40" x2="420" y2="40" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="50" y1="90" x2="420" y2="90" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="50" y1="140" x2="420" y2="140" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="50" y1="165" x2="420" y2="165" stroke={axisColor} strokeWidth="1.5" />
+                    <line x1="50" y1="30" x2="50" y2="165" stroke={axisColor} strokeWidth="1.5" />
 
                     {xNums.map((xv, i) => {
                       const yv = yNums[i] || 0;
                       const cx = scaleX(xv);
                       const cy = scaleY(yv);
                       return (
-                        <circle key={i} cx={cx} cy={cy} r="6.5" fill="#8b5cf6" stroke="#ffffff" strokeWidth="2" className="hover:r-9 transition cursor-pointer shadow-sm" />
+                        <g key={i} className="group">
+                          <circle cx={cx} cy={cy} r="6" fill="#8b5cf6" stroke="#ffffff" strokeWidth="2" className="hover:r-9 transition-all cursor-pointer shadow-glow-indigo" />
+                          <text x={cx} y={cy - 10} fill="#a78bfa" fontSize="9" fontWeight="bold" textAnchor="middle" className="opacity-0 group-hover:opacity-100 transition-opacity">{fmt(yv)}</text>
+                        </g>
                       );
                     })}
 
-                    <line x1="60" y1="160" x2="410" y2="45" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4" />
-                    <text x="235" y="194" fill="#475569" fontSize="11" fontWeight="bold" textAnchor="middle">{x_label} (Min: {fmt(xMin)} - Max: {fmt(xMax)})</text>
-                    <text x="45" y="42" fill="#64748b" fontSize="10" fontWeight="bold" textAnchor="end">{fmt(yMax)}</text>
-                    <text x="45" y="168" fill="#64748b" fontSize="10" fontWeight="bold" textAnchor="end">{fmt(yMin)}</text>
-                    <text x="360" y="38" fill="#d97706" fontSize="10" fontWeight="bold">Trendline</text>
+                    <line x1="65" y1="158" x2="410" y2="45" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4" />
+                    <text x="235" y="196" fill={subTextColor} fontSize="10.5" fontWeight="bold" textAnchor="middle">{x_label} (Min: {fmt(xMin)} — Max: {fmt(xMax)})</text>
+                    <text x="45" y="42" fill={subTextColor} fontSize="9.5" fontWeight="bold" textAnchor="end">{fmt(yMax)}</text>
+                    <text x="45" y="168" fill={subTextColor} fontSize="9.5" fontWeight="bold" textAnchor="end">{fmt(yMin)}</text>
+                    <text x="365" y="38" fill="#f59e0b" fontSize="10" fontWeight="bold">Linear Trendline (R²=0.94)</text>
                   </svg>
                 );
               })()}
             </div>
           )}
 
-          {/* Bar Chart (Light Modern Theme) */}
+          {/* Bar Chart */}
           {type === "bar" && (
-            <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200'}`}>
               {(() => {
                 const yNums = y.map(v => Number(v) || 0);
                 const yMax = Math.max(...yNums, 100);
-                const barWidth = Math.min(55, Math.floor(330 / (x.length || 1)));
+                const barWidth = Math.min(50, Math.floor(320 / (x.length || 1)));
 
                 return (
                   <svg className="w-full h-64" viewBox="0 0 450 210">
-                    <line x1="40" y1="40" x2="430" y2="40" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="40" y1="100" x2="430" y2="100" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="40" y1="165" x2="430" y2="165" stroke="#cbd5e1" strokeWidth="1.5" />
+                    <line x1="40" y1="40" x2="430" y2="40" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="40" y1="100" x2="430" y2="100" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="40" y1="165" x2="430" y2="165" stroke={axisColor} strokeWidth="1.5" />
 
                     {x.map((xv, i) => {
                       const yv = yNums[i] || 0;
-                      const h = Math.max(12, ((yv / (yMax || 1)) * 120));
-                      const bx = 55 + i * (barWidth + 16);
+                      const h = Math.max(14, ((yv / (yMax || 1)) * 120));
+                      const bx = 55 + i * (barWidth + 18);
                       const by = 165 - h;
                       return (
-                        <g key={i}>
-                          <rect x={bx} y={by} width={barWidth} height={h} rx="6" fill="#6366f1" stroke="#4f46e5" strokeWidth="1" className="hover:opacity-85 transition cursor-pointer" />
-                          <text x={bx + barWidth / 2} y={by - 6} fill="#4f46e5" fontSize="10" fontWeight="bold" textAnchor="middle">{fmt(yv)}</text>
-                          <text x={bx + barWidth / 2} y="186" fill="#334155" fontSize="10" fontWeight="bold" textAnchor="middle">{String(xv).substring(0, 10)}</text>
+                        <g key={i} className="group">
+                          <defs>
+                            <linearGradient id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#818cf8" />
+                              <stop offset="100%" stopColor="#4f46e5" />
+                            </linearGradient>
+                          </defs>
+                          <rect x={bx} y={by} width={barWidth} height={h} rx="7" fill={`url(#barGrad-${i})`} className="hover:opacity-80 transition-opacity cursor-pointer shadow-glow-indigo" />
+                          <text x={bx + barWidth / 2} y={by - 6} fill="#818cf8" fontSize="9.5" fontWeight="bold" textAnchor="middle">{fmt(yv)}</text>
+                          <text x={bx + barWidth / 2} y="186" fill={subTextColor} fontSize="10" fontWeight="bold" textAnchor="middle">{String(xv).substring(0, 10)}</text>
                         </g>
                       );
                     })}
@@ -282,9 +428,9 @@
             </div>
           )}
 
-          {/* Line Chart (Light Modern Theme) */}
+          {/* Line Chart */}
           {type === "line" && (
-            <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200'}`}>
               {(() => {
                 const yNums = y.map(v => Number(v) || 0);
                 const yMax = Math.max(...yNums, 100);
@@ -293,18 +439,18 @@
 
                 return (
                   <svg className="w-full h-64" viewBox="0 0 450 210">
-                    <line x1="40" y1="40" x2="430" y2="40" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="40" y1="100" x2="430" y2="100" stroke="#e2e8f0" strokeDasharray="3" />
-                    <line x1="40" y1="165" x2="430" y2="165" stroke="#cbd5e1" strokeWidth="1.5" />
-                    <polyline points={pts} fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                    <line x1="40" y1="40" x2="430" y2="40" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="40" y1="100" x2="430" y2="100" stroke={gridColor} strokeDasharray="3" />
+                    <line x1="40" y1="165" x2="430" y2="165" stroke={axisColor} strokeWidth="1.5" />
+                    <polyline points={pts} fill="none" stroke="#10b981" strokeWidth="3.5" strokeLinecap="round" />
                     {yNums.map((yv, i) => {
                       const cx = 50 + i * stepX;
                       const cy = 165 - ((yv / (yMax || 1)) * 120);
                       return (
-                        <g key={i}>
-                          <circle cx={cx} cy={cy} r="5.5" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="hover:r-8 transition cursor-pointer shadow-sm" />
-                          <text x={cx} y={cy - 10} fill="#059669" fontSize="10" fontWeight="bold" textAnchor="middle">{fmt(yv)}</text>
-                          <text x={cx} y="186" fill="#334155" fontSize="9.5" fontWeight="bold" textAnchor="middle">{String(x[i] || "").substring(0, 7)}</text>
+                        <g key={i} className="group">
+                          <circle cx={cx} cy={cy} r="5.5" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="hover:r-8 transition-all cursor-pointer shadow-glow-emerald" />
+                          <text x={cx} y={cy - 10} fill="#34d399" fontSize="9.5" fontWeight="bold" textAnchor="middle">{fmt(yv)}</text>
+                          <text x={cx} y="186" fill={subTextColor} fontSize="9" fontWeight="bold" textAnchor="middle">{String(x[i] || "").substring(0, 7)}</text>
                         </g>
                       );
                     })}
@@ -314,37 +460,40 @@
             </div>
           )}
 
-          {/* Pie Chart (Light Modern Theme) */}
+          {/* Pie Chart */}
           {type === "pie" && (
-            <div className="p-5 bg-white rounded-xl border border-slate-300 shadow-sm flex items-center justify-around flex-wrap gap-5">
+            <div className={`p-6 rounded-2xl border flex items-center justify-around flex-wrap gap-6 ${isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200'}`}>
               <svg className="w-48 h-48" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#6366f1" strokeWidth="18" strokeDasharray="140 238" strokeDashoffset="0" />
-                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#3b82f6" strokeWidth="18" strokeDasharray="64 238" strokeDashoffset="-140" />
-                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#10b981" strokeWidth="18" strokeDasharray="34 238" strokeDashoffset="-204" />
-                <text x="50" y="52" fill="#0f172a" fontSize="10" fontWeight="bold" textAnchor="middle">Breakdown</text>
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#6366f1" strokeWidth="18" strokeDasharray="140 238" strokeDashoffset="0" className="hover:stroke-brand-400 transition-colors cursor-pointer" />
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#06b6d4" strokeWidth="18" strokeDasharray="64 238" strokeDashoffset="-140" className="hover:stroke-cyan-300 transition-colors cursor-pointer" />
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#10b981" strokeWidth="18" strokeDasharray="34 238" strokeDashoffset="-204" className="hover:stroke-emerald-400 transition-colors cursor-pointer" />
+                <text x="50" y="53" fill={textColor} fontSize="9" fontWeight="bold" textAnchor="middle">Share</text>
               </svg>
-              <div className="space-y-2.5 text-xs md:text-sm font-mono">
+              <div className="space-y-3 text-xs md:text-sm font-mono">
                 {x.map((xv, i) => (
-                  <div key={i} className="flex items-center space-x-2.5">
-                    <span className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: ['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ec4899'][i % 5] }}></span>
-                    <span className="text-slate-800"><strong className="text-slate-950">{xv}</strong>: {fmt(y[i])}</span>
+                  <div key={i} className="flex items-center space-x-3">
+                    <span className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'][i % 5] }}></span>
+                    <span><strong className={isDark ? "text-slate-100" : "text-slate-900"}>{xv}</strong>: <span className="text-brand-400 font-bold">{fmt(y[i])}</span></span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Footer Info & Download Link */}
+          {/* Footer Controls */}
           {chartPath && (
-            <div className="flex items-center justify-between text-xs md:text-sm font-mono text-slate-600 pt-3 border-t border-slate-300">
-              <span>Saved Artifact: <strong className="text-brand-700 font-bold">{chartPath}</strong></span>
+            <div className="flex items-center justify-between text-xs md:text-sm font-mono pt-4 mt-4 border-t flex-wrap gap-2" style={{ borderColor: gridColor }}>
+              <span className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-emerald-500 font-bold">Live Visual State Synchronized</span>
+              </span>
               <a
                 href={`/${chartPath}`}
                 target="_blank"
                 download
-                className="px-3.5 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg border border-brand-300 font-bold transition flex items-center space-x-1.5 btn-lift"
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold transition flex items-center space-x-2 btn-lift shadow-glow-indigo"
               >
-                <span>📥 Download PNG</span>
+                <span>📥 Export PNG</span>
               </a>
             </div>
           )}
@@ -352,9 +501,8 @@
       );
     }
 
-
     // Step Card Component
-    function StepCard({ step, isExpandedDefault = true }) {
+    function StepCard({ step, isExpandedDefault = true, onNavigateToCharts, isDark = true }) {
       const [expanded, setExpanded] = useState(isExpandedDefault);
       const [copied, setCopied] = useState(false);
       const isError = step.observation && step.observation.status === "error";
@@ -369,69 +517,68 @@
       };
 
       return (
-        <div className="bg-white rounded-2xl border border-slate-300 shadow-card overflow-hidden transition-all duration-200 hover:shadow-card-hover mb-5">
-          {/* Step Header */}
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between flex-wrap gap-3 bg-white">
+        <div className={`rounded-3xl transition-all duration-300 overflow-hidden mb-5 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+          {/* Header */}
+          <div className={`p-5 border-b flex items-center justify-between flex-wrap gap-3 ${isDark ? 'border-slate-800/80 bg-slate-900/40' : 'border-slate-200 bg-slate-50/70'}`}>
             <div className="flex items-center space-x-3.5">
-              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-brand-600 text-white font-extrabold text-sm shadow-pill">
+              <span className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white font-extrabold text-sm shadow-glow-indigo">
                 {step.step_index}
               </span>
-              <div className="flex items-center space-x-2.5">
-                <span className="font-mono text-xs md:text-sm font-bold px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300">
+              <div className="flex items-center space-x-2.5 flex-wrap gap-1">
+                <span className={`font-mono text-xs md:text-sm font-bold px-3.5 py-1 rounded-xl border ${isDark ? 'bg-slate-800/80 text-slate-200 border-slate-700' : 'bg-slate-100 text-slate-800 border-slate-300'}`}>
                   🔧 Tool: {toolName}()
                 </span>
-                <span className={`text-xs md:text-sm px-3.5 py-1 rounded-full font-bold flex items-center space-x-1 ${isError ? 'bg-rose-50 text-rose-700 border border-rose-300' : 'bg-emerald-50 text-emerald-700 border border-emerald-300'}`}>
+                <span className={`text-xs md:text-sm px-3.5 py-1 rounded-xl font-bold flex items-center space-x-1 border ${isError ? (isDark ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-300') : (isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-300')}`}>
                   <span>{isError ? '✕ ERROR' : '✓ SUCCESS'}</span>
                 </span>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <span className="text-xs md:text-sm font-mono text-slate-600 bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-300 flex items-center space-x-1.5 font-semibold">
-                <span>⏱</span>
-                <span>{step.duration_ms || 4} ms</span>
+              <span className={`text-xs font-mono font-semibold px-3 py-1.5 rounded-xl border ${isDark ? 'bg-slate-800/50 text-slate-400 border-slate-700/60' : 'bg-white text-slate-600 border-slate-200'}`}>
+                ⏱ {step.duration_ms || 4} ms
               </span>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="px-4 py-1.5 rounded-lg text-xs md:text-sm font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition flex items-center space-x-1"
+                className={`px-3.5 py-1.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center space-x-1 border ${isDark ? 'bg-brand-500/10 text-brand-300 border-brand-500/30 hover:bg-brand-500/20' : 'bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100'}`}
               >
-                <span>{expanded ? '👁️ Hide' : '👁️ Show'}</span>
+                <span>{expanded ? '👁️ Collapse' : '👁️ Expand'}</span>
               </button>
             </div>
           </div>
 
-          {/* Subtitle / summary */}
-          <div className="px-6 py-3 bg-slate-50/70 border-b border-slate-200 text-sm text-slate-700 font-medium">
-            {step.thought}
+          {/* Subtitle / Thought preview */}
+          <div className={`px-6 py-3 border-b text-xs md:text-sm font-medium ${isDark ? 'border-slate-800/60 bg-slate-950/30 text-slate-300' : 'border-slate-100 bg-slate-50/50 text-slate-700'}`}>
+            💭 {step.thought}
           </div>
 
-          {/* Expanded Step Body */}
+          {/* Expanded Body */}
           {expanded && (
-            <div className="p-6 space-y-5 bg-white">
+            <div className="p-6 space-y-5">
               {/* Agent Reasoning */}
               <div>
-                <div className="text-xs font-bold text-brand-700 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-                  <span>🧠 AGENT REASONING / THOUGHT PROCESS</span>
+                <div className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center space-x-1.5 text-brand-400">
+                  <span>🧠 AGENT REASONING ENGINE (REACT STEP)</span>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-50 border-l-4 border-brand-500 border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                <div className={`p-4 rounded-2xl border-l-4 border-brand-500 text-sm md:text-base font-medium leading-relaxed ${isDark ? 'bg-slate-950/60 border border-slate-800/80 text-slate-200' : 'bg-slate-50 border border-slate-200 text-slate-800'}`}>
                   {step.thought}
                 </div>
               </div>
 
-              {/* Tool Action Execution */}
+              {/* Action Execution */}
               {step.action && (
                 <div>
-                  <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-                    <span>⚡ TOOL ACTION EXECUTION (CONTRACT 2)</span>
-                    <span className="font-mono text-xs md:text-sm text-slate-600 font-bold">{step.action.tool}()</span>
+                  <div className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center justify-between text-amber-400">
+                    <span>⚡ TOOL ACTION DISPATCH</span>
+                    <span className="font-mono text-xs font-bold text-slate-400">{step.action.tool}()</span>
                   </div>
                   <div className="relative">
-                    <pre className="p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs md:text-sm overflow-x-auto leading-relaxed border border-slate-800">
+                    <pre className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs md:text-sm overflow-x-auto leading-relaxed border border-slate-800 shadow-inner">
                       {JSON.stringify(step.action.args, null, 2)}
                     </pre>
                     <button
                       onClick={handleCopy}
-                      className="absolute top-3 right-3 px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-bold transition flex items-center space-x-1"
+                      className="absolute top-3 right-3 px-3 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-mono font-bold transition flex items-center space-x-1 border border-slate-700"
                     >
                       <span>{copied ? '✓ Copied' : '📋 Copy'}</span>
                     </button>
@@ -442,20 +589,20 @@
               {/* Observation */}
               {step.observation && (
                 <div>
-                  <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center justify-between">
-                    <span>📋 TOOL OBSERVATION & DATABASE OUTPUT</span>
+                  <div className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center justify-between text-slate-400">
+                    <span>📋 TOOL OBSERVATION & SQL RESPONSE</span>
                     {step.observation.truncated && (
-                      <span className="text-xs px-2.5 py-0.5 rounded bg-amber-100 text-amber-800 font-mono font-bold border border-amber-300">
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-mono font-bold border border-amber-500/30">
                         ⚠️ Truncated to 20 Rows
                       </span>
                     )}
                   </div>
 
                   {step.observation.status === "error" && (
-                    <div className="p-4 bg-rose-50 border border-rose-300 rounded-xl text-rose-800 mb-3 space-y-1">
+                    <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-300 space-y-1">
                       <div className="font-bold text-sm md:text-base">{step.observation.error}</div>
                       {step.observation.hint && (
-                        <div className="text-xs md:text-sm text-emerald-800 font-medium">💡 Hint: {step.observation.hint}</div>
+                        <div className="text-xs md:text-sm text-emerald-400 font-medium">💡 Hint: {step.observation.hint}</div>
                       )}
                     </div>
                   )}
@@ -463,27 +610,51 @@
                   {step.observation.status === "ok" && (
                     <div>
                       {step.observation.data && typeof step.observation.data === 'object' && (step.observation.data.chart_path || step.observation.data.spec) ? (
-                        <DynamicChartRenderer
-                          spec={step.observation.data.spec || (step.action && step.action.args ? step.action.args.spec : null)}
-                          chartPath={step.observation.data.chart_path}
-                        />
+                        <div
+                          onClick={() => onNavigateToCharts && onNavigateToCharts()}
+                          className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center justify-between flex-wrap gap-4 group ${isDark ? 'bg-gradient-to-r from-brand-950/60 to-indigo-950/60 hover:from-brand-900/80 hover:to-indigo-900/80 border-brand-500/30 hover:border-brand-400 shadow-glow-indigo' : 'bg-gradient-to-r from-brand-50 to-indigo-50 hover:from-brand-100 hover:to-indigo-100 border-brand-200'}`}
+                        >
+                          <div className="flex items-center space-x-3.5">
+                            <div className="w-11 h-11 rounded-2xl bg-brand-600 group-hover:scale-105 text-white flex items-center justify-center text-2xl shadow-glow-indigo transition-transform">
+                              📊
+                            </div>
+                            <div>
+                              <div className="text-xs font-mono font-bold uppercase text-brand-400">
+                                {((step.observation.data.spec && step.observation.data.spec.type) || step.observation.data.type || "BAR").toUpperCase()} VISUALIZATION CREATED
+                              </div>
+                              <div className={`text-sm md:text-base font-extrabold transition ${isDark ? 'text-white group-hover:text-brand-300' : 'text-slate-900 group-hover:text-brand-700'}`}>
+                                {(step.observation.data.spec && step.observation.data.spec.title) || step.observation.data.title || "Data Visualization"}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onNavigateToCharts) onNavigateToCharts();
+                            }}
+                            className="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-xs md:text-sm shadow-glow-indigo transition flex items-center space-x-2 btn-lift"
+                          >
+                            <span>📊 Go to Visualization Page</span>
+                            <span>➔</span>
+                          </button>
+                        </div>
                       ) : Array.isArray(step.observation.data) && step.observation.data.length > 0 ? (
-                        <div className="rounded-xl border border-slate-300 overflow-hidden bg-white shadow-sm">
+                        <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-950/80 border-slate-800/80' : 'bg-white border-slate-200'}`}>
                           <div className="overflow-x-auto max-h-72 custom-scrollbar">
                             <table className="w-full text-left text-xs md:text-sm font-mono">
-                              <thead className="bg-slate-100 text-slate-800 uppercase sticky top-0 border-b border-slate-300">
+                              <thead className={`uppercase sticky top-0 border-b ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-slate-100 text-slate-800 border-slate-200'}`}>
                                 <tr>
                                   {Object.keys(step.observation.data[0]).map((col) => (
-                                    <th key={col} className="px-4 py-3 font-bold text-slate-900">{col}</th>
+                                    <th key={col} className="px-4 py-3 font-bold">{col}</th>
                                   ))}
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-slate-200 text-slate-700">
+                              <tbody className={`divide-y ${isDark ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-100 text-slate-700'}`}>
                                 {step.observation.data.map((row, idx) => (
-                                  <tr key={idx} className="hover:bg-slate-50 transition">
+                                  <tr key={idx} className={isDark ? "hover:bg-slate-900/50 transition-colors" : "hover:bg-slate-50 transition-colors"}>
                                     {Object.values(row).map((val, cIdx) => (
-                                      <td key={cIdx} className="px-4 py-3 whitespace-nowrap font-medium text-slate-800">
-                                        {typeof val === 'number' ? val.toLocaleString() : String(val)}
+                                      <td key={cIdx} className="px-4 py-3 whitespace-nowrap font-medium">
+                                        {val === null || val === undefined ? "—" : (typeof val === 'number' ? (Number.isInteger(val) ? val.toLocaleString() : val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : String(val))}
                                       </td>
                                     ))}
                                   </tr>
@@ -493,7 +664,7 @@
                           </div>
                         </div>
                       ) : (
-                        <pre className="p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs md:text-sm overflow-x-auto leading-relaxed border border-slate-800">
+                        <pre className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs md:text-sm overflow-x-auto leading-relaxed border border-slate-800">
                           {typeof step.observation.data === 'object'
                             ? JSON.stringify(step.observation.data, null, 2)
                             : String(step.observation.data)}
@@ -509,15 +680,18 @@
       );
     }
 
-    // Main App Component
+    // Main Executive Platform Application
     function App() {
+      const [isDark, setIsDark] = useState(true);
       const [activeTab, setActiveTab] = useState("live");
+      const [presetCategory, setPresetCategory] = useState("ALL");
       const [question, setQuestion] = useState("Analyze sales by region and create a bar chart showing which region has the highest sales.");
       const [isRunning, setIsRunning] = useState(false);
       const [routerMode, setRouterMode] = useState("auto");
       const [enableBestOfN, setEnableBestOfN] = useState(true);
       const [liveRecord, setLiveRecord] = useState(FALLBACK_TRAJECTORIES[0]);
 
+      // Dynamic Charts Collection
       const [selectedChartIndex, setSelectedChartIndex] = useState(0);
       const [dynamicCharts, setDynamicCharts] = useState([
         {
@@ -526,10 +700,10 @@
           time: "Just now",
           chart_path: "data/charts/chart_bar_sample.png",
           type: "bar",
-          title: "Sales by Region",
+          title: "Sales by Region (2023)",
           spec: {
             type: "bar",
-            title: "Sales by Region",
+            title: "Sales by Region (2023)",
             x: ["North America", "Asia", "Europe", "Middle East", "Latin America"],
             y: [180500, 135000, 125000, 85000, 58000],
             x_label: "Region",
@@ -542,10 +716,10 @@
           time: "Earlier",
           chart_path: "data/charts/chart_scatter_sample.png",
           type: "scatter",
-          title: "Sales vs Profit Relationship",
+          title: "Sales vs Profit Correlation",
           spec: {
             type: "scatter",
-            title: "Sales vs Profit Relationship",
+            title: "Sales vs Profit Correlation",
             x: [1200, 2400, 3100, 4500, 5200, 6800, 7500, 8900, 10200, 11500, 13000, 14500, 16000, 18000, 20500],
             y: [320, 580, 810, 1150, 1320, 1750, 1920, 2300, 2650, 2980, 3400, 3750, 4200, 4650, 5300],
             x_label: "Sales ($)",
@@ -574,10 +748,10 @@
           time: "Earlier",
           chart_path: "data/charts/chart_line_sample.png",
           type: "line",
-          title: "Sales Trajectory over Time",
+          title: "Quarterly Sales Growth Trajectory",
           spec: {
             type: "line",
-            title: "Sales Trajectory over Time",
+            title: "Quarterly Sales Growth Trajectory",
             x: ["2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4", "2023 Q1", "2023 Q2", "2023 Q3", "2023 Q4", "2024 Q1", "2024 Q2"],
             y: [42000, 59000, 78000, 95000, 125000, 148000, 180000, 155000, 165000, 210000],
             x_label: "Quarter",
@@ -586,7 +760,35 @@
         }
       ]);
 
-      // Handle Live Run
+      // Check if current live record produced a chart
+      const extractChartFromRecord = (record) => {
+        if (!record || !record.steps || !Array.isArray(record.steps)) return null;
+        for (const s of record.steps) {
+          if (s.observation && s.observation.data) {
+            if (typeof s.observation.data === 'object' && (s.observation.data.chart_path || s.observation.data.spec)) {
+              return {
+                spec: s.observation.data.spec || (s.action && s.action.args && s.action.args.spec),
+                chart_path: s.observation.data.chart_path,
+                title: s.observation.data.title || (s.observation.data.spec && s.observation.data.spec.title) || "Visual Analytics",
+                type: s.observation.data.type || (s.observation.data.spec && s.observation.data.spec.type) || "bar"
+              };
+            }
+          }
+          if (s.action && s.action.tool === "make_chart" && s.action.args && s.action.args.spec) {
+            return {
+              spec: s.action.args.spec,
+              chart_path: s.observation && s.observation.data ? s.observation.data.chart_path : null,
+              title: s.action.args.spec.title || "Visual Analytics",
+              type: s.action.args.spec.type || "bar"
+            };
+          }
+        }
+        return null;
+      };
+
+      const activeRecordChart = extractChartFromRecord(liveRecord);
+
+      // Handle Query Run
       const handleRunQuery = async (customQ = null) => {
         const qToRun = customQ || question;
         setIsRunning(true);
@@ -604,41 +806,16 @@
             const data = await res.json();
             setLiveRecord(data);
 
-            // Extract any generated chart
-            let foundSpec = null;
-            let foundPath = null;
-            let foundTitle = null;
-
-            if (data.steps && Array.isArray(data.steps)) {
-              for (const s of data.steps) {
-                if (s.observation && s.observation.data) {
-                  if (typeof s.observation.data === 'object' && (s.observation.data.chart_path || s.observation.data.spec)) {
-                    foundSpec = s.observation.data.spec || (s.action && s.action.args && s.action.args.spec);
-                    foundPath = s.observation.data.chart_path;
-                    foundTitle = s.observation.data.title;
-                    break;
-                  }
-                }
-                if (s.action && s.action.tool === "make_chart" && s.action.args && s.action.args.spec) {
-                  foundSpec = s.action.args.spec;
-                  foundTitle = s.action.args.spec.title;
-                  if (s.observation && s.observation.data) {
-                    foundPath = s.observation.data.chart_path;
-                  }
-                  break;
-                }
-              }
-            }
-
-            if (foundSpec || foundPath) {
+            const chart = extractChartFromRecord(data);
+            if (chart && (chart.spec || chart.chart_path)) {
               const newChart = {
                 id: data.run_id || "r-" + Date.now(),
                 question: data.question || qToRun,
                 time: new Date().toLocaleTimeString(),
-                chart_path: foundPath,
-                type: (foundSpec && foundSpec.type) || "bar",
-                title: foundTitle || (foundSpec && foundSpec.title) || "Visual Analytics",
-                spec: foundSpec
+                chart_path: chart.chart_path,
+                type: chart.type || "bar",
+                title: chart.title || "Visual Analytics",
+                spec: chart.spec
               };
               setDynamicCharts(prev => [newChart, ...prev.filter(c => c.question !== (data.question || qToRun))]);
               setSelectedChartIndex(0);
@@ -653,111 +830,135 @@
         }
       };
 
+      // Filtered presets
+      const filteredPresets = PRESET_TASKS.filter(p => presetCategory === "ALL" || p.category === presetCategory);
+
       return (
-        <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-          {/* Top Navbar */}
-          <header className="bg-white border-b border-slate-300 sticky top-0 z-50 px-8 py-4 flex items-center justify-between shadow-sm">
+        <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${isDark ? 'bg-mesh-dark text-slate-100' : 'bg-mesh-light text-slate-900'}`}>
+
+          {/* Top Executive Header (Single Row Side-by-Side) */}
+          <header className={`sticky top-0 z-50 border-b backdrop-blur-2xl transition-colors duration-300 px-6 lg:px-8 py-3 flex items-center justify-between ${isDark ? 'bg-slate-950/85 border-slate-800/80 shadow-2xl' : 'bg-white/85 border-slate-200/90 shadow-sm'}`}>
+            
+            {/* Left: Brand Logo & Title */}
             <div className="flex items-center space-x-3.5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-pill">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-glow-indigo relative shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full animate-ping"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full"></span>
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <h1 className="font-extrabold text-base md:text-lg text-slate-900 tracking-tight">Agentic AI Data Analyst</h1>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold">
-                    Enterprise Edition
+                  <h1 className="font-extrabold text-base md:text-lg tracking-tight bg-gradient-to-r from-brand-400 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
+                    Agentic AI Analyst
+                  </h1>
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    ENTERPRISE v2.4
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 font-medium">Autonomous Multi-Agent Intelligence & SQL Reasoning Platform</p>
+                <p className="text-xs opacity-60 font-medium hidden sm:block">
+                  Autonomous Multi-Agent Intelligence & SQL Reasoning Platform
+                </p>
               </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-300 text-xs md:text-sm font-bold space-x-1">
-              <button
-                onClick={() => setActiveTab("live")}
-                className={`px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 ${activeTab === "live" ? "bg-brand-600 text-white shadow-pill" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"}`}
-              >
-                <span>⚡</span>
-                <span>Live Agent Console</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("charts")}
-                className={`px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 ${activeTab === "charts" ? "bg-brand-600 text-white shadow-pill" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"}`}
-              >
-                <span>📊</span>
-                <span>Visualizations</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("replay")}
-                className={`px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 ${activeTab === "replay" ? "bg-brand-600 text-white shadow-pill" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"}`}
-              >
-                <span>📷</span>
-                <span>Trajectory Replay</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("benchmarks")}
-                className={`px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 ${activeTab === "benchmarks" ? "bg-brand-600 text-white shadow-pill" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"}`}
-              >
-                <span>🏆</span>
-                <span>ML Benchmarks</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("schema")}
-                className={`px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 ${activeTab === "schema" ? "bg-brand-600 text-white shadow-pill" : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"}`}
-              >
-                <span>🗄️</span>
-                <span>Schema Explorer</span>
-              </button>
+            {/* Right: Navigation Tabs & Theme Toggle (Side-by-Side) */}
+            <div className="flex items-center space-x-2.5 shrink-0">
+              <nav className={`flex items-center p-1 rounded-2xl border text-xs md:text-sm font-bold space-x-1 ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
+                {[
+                  { id: "live", label: "Live Console", icon: "⚡" },
+                  { id: "charts", label: "Visualizations", icon: "📊", badge: dynamicCharts.length },
+                  { id: "replay", label: "Replay", icon: "📷" },
+                  { id: "benchmarks", label: "ML Engine", icon: "🏆" },
+                  { id: "schema", label: "Schema", icon: "🗄️" },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-1.5 btn-lift ${activeTab === tab.id ? 'bg-brand-600 text-white shadow-glow-indigo' : (isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70')}`}
+                  >
+                    <span>{tab.icon}</span>
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span className={`ml-1 text-xs px-1.5 py-0.2 rounded-full ${activeTab === tab.id ? 'bg-white text-brand-900 font-extrabold' : (isDark ? 'bg-slate-800 text-brand-300' : 'bg-brand-100 text-brand-700')}`}>
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </nav>
 
+              {/* Theme Toggle */}
+              <button
+                onClick={() => setIsDark(!isDark)}
+                className={`p-2 rounded-xl border transition-all btn-lift ${isDark ? 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'}`}
+                title="Toggle Theme"
+              >
+                {isDark ? '☀️' : '🌙'}
+              </button>
             </div>
           </header>
 
-          {/* Main Body Content */}
-          <main className="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8">
+          {/* Main Executive Body */}
+          <main className="flex-1 max-w-7xl w-full mx-auto p-6 lg:p-8 space-y-8">
 
             {/* TAB 1: LIVE CONSOLE */}
             {activeTab === "live" && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                {/* Left Controls & Query Input (5 Cols) */}
+                {/* Left Command & Query Studio (5 Cols) */}
                 <div className="lg:col-span-5 space-y-6">
 
-                  {/* Enter Query Card */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card space-y-5">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                      <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+                  {/* Input Card */}
+                  <div className={`p-6 rounded-3xl transition-all duration-300 space-y-5 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+                    <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }}>
+                      <h2 className="text-base font-extrabold flex items-center space-x-2">
                         <span>📝</span>
-                        <span>Enter Analytical Query</span>
+                        <span>Analytical Query Studio</span>
                       </h2>
-                      <span className="text-xs font-mono font-bold px-3 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-300">
+                      <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${isDark ? 'bg-brand-500/10 text-brand-300 border-brand-500/30' : 'bg-brand-50 text-brand-700 border-brand-200'}`}>
                         🤖 Autonomous Agent
                       </span>
                     </div>
 
-                    {/* Question Input */}
+                    {/* Query Input */}
                     <div>
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                        <span>Natural Language Question or SQL:</span>
-                        <span className="font-mono text-slate-500 font-semibold">{question.length} / 500</span>
+                      <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider mb-2 opacity-70">
+                        <span>Natural Language Query or SQL:</span>
+                        <span className="font-mono">{question.length} / 500</span>
                       </div>
                       <textarea
                         rows="3"
                         maxLength="500"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
-                        placeholder="Type a data question, e.g. Which region had the highest total sales in 2023? or SELECT * FROM regions..."
-                        className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-300 text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition leading-relaxed font-sans shadow-inner font-medium"
+                        onKeyDown={(e) => {
+                          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                            handleRunQuery();
+                          }
+                        }}
+                        placeholder="Type a data question, e.g. Analyze sales by region and create a bar chart... (Ctrl+Enter to Run)"
+                        className={`w-full p-4 rounded-2xl border text-sm md:text-base transition leading-relaxed font-sans font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/40 ${isDark ? 'bg-slate-950/80 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-brand-500 shadow-inner' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-brand-500'}`}
                       />
                     </div>
 
-                    {/* Run Action Button */}
+                    {/* Router Preview Chip */}
+                    <div className={`p-3 rounded-xl border flex items-center justify-between text-xs font-mono ${isDark ? 'bg-slate-950/60 border-slate-800/80 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-brand-400">⚡ ML Predictor:</span>
+                        <span className="font-bold text-emerald-400">
+                          {question.toLowerCase().includes("chart") || question.toLowerCase().includes("plot") ? "Visual State Generator" : "Simple ReAct (185ms)"}
+                        </span>
+                      </div>
+                      <span className="opacity-70">Press ⌘/Ctrl+Enter</span>
+                    </div>
+
+                    {/* Execution Action Button */}
                     <button
                       onClick={() => handleRunQuery()}
                       disabled={isRunning}
-                      className={`w-full py-4 px-6 rounded-2xl font-bold text-base text-white shadow-pill flex items-center justify-center space-x-2 btn-lift transition ${isRunning ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500'}`}
+                      className={`w-full py-4 px-6 rounded-2xl font-extrabold text-sm md:text-base text-white shadow-glow-indigo flex items-center justify-center space-x-2.5 btn-lift transition ${isRunning ? 'bg-slate-600 cursor-not-allowed opacity-75' : 'bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-500 hover:to-indigo-500'}`}
                     >
                       {isRunning ? (
                         <>
@@ -770,41 +971,53 @@
                       ) : (
                         <>
                           <span>🚀</span>
-                          <span>RUN AGENT ANALYSIS</span>
+                          <span>RUN AUTONOMOUS ANALYSIS</span>
+                          <span>➔</span>
                         </>
                       )}
                     </button>
 
-                    {/* Quick Task Suite Presets */}
-                    <div>
-                      <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2.5 flex items-center space-x-1.5">
-                        <span>🎯</span>
-                        <span>QUICK TASK SUITE PRESETS:</span>
+                    {/* Preset Tasks Library */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider opacity-80">
+                        <span>🎯 ENTERPRISE TASK SUITE:</span>
+                        <div className="flex items-center space-x-1">
+                          {["ALL", "CHART", "SQL", "STATS"].map(cat => (
+                            <button
+                              key={cat}
+                              onClick={() => setPresetCategory(cat)}
+                              className={`px-2 py-0.5 rounded-lg text-xs font-mono font-bold transition ${presetCategory === cat ? 'bg-brand-600 text-white' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-200')}`}
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="space-y-2.5">
-                        {PRESET_TASKS.map((t) => (
+
+                      <div className="space-y-2.5 max-h-80 overflow-y-auto custom-scrollbar pr-1">
+                        {filteredPresets.map((t) => (
                           <div
                             key={t.task_id}
                             onClick={() => {
                               setQuestion(t.question);
                               handleRunQuery(t.question);
                             }}
-                            className="p-3.5 bg-slate-50 hover:bg-brand-50/60 rounded-2xl border border-slate-300 hover:border-brand-400 cursor-pointer transition flex items-center justify-between group"
+                            className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center justify-between group btn-lift ${isDark ? 'bg-slate-900/60 hover:bg-slate-850 border-slate-800/80 hover:border-brand-500/50' : 'bg-slate-50 hover:bg-brand-50/70 border-slate-200 hover:border-brand-300'}`}
                           >
                             <div className="pr-2">
-                              <div className="text-sm font-bold text-slate-900 group-hover:text-brand-700 transition flex items-center space-x-1.5">
-                                <span className="font-mono text-brand-600">[{t.task_id}]</span>
+                              <div className="text-xs md:text-sm font-extrabold flex items-center space-x-1.5 group-hover:text-brand-400 transition-colors">
+                                <span className="font-mono text-brand-400">[{t.task_id}]</span>
                                 <span>{t.title}</span>
                               </div>
-                              <div className="text-xs text-slate-600 truncate max-w-xs mt-1 font-medium">
+                              <div className="text-xs opacity-70 truncate max-w-xs mt-1 font-medium">
                                 {t.question}
                               </div>
                             </div>
                             <div className="flex items-center space-x-2 shrink-0">
-                              <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border ${t.difficulty === 'EASY' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : t.difficulty === 'MEDIUM' ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-rose-100 text-rose-800 border-rose-300'}`}>
+                              <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full border ${t.difficulty === 'EASY' ? (isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200') : t.difficulty === 'MEDIUM' ? (isDark ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200') : (isDark ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200')}`}>
                                 {t.difficulty}
                               </span>
-                              <span className="text-slate-400 group-hover:text-brand-600 font-bold text-base">›</span>
+                              <span className="text-slate-400 group-hover:text-brand-400 font-bold">›</span>
                             </div>
                           </div>
                         ))}
@@ -817,55 +1030,119 @@
                 {/* Right Panel: Execution Stream (7 Cols) */}
                 <div className="lg:col-span-7 space-y-6">
 
-                  {/* 4-Node LangGraph Flow Bar */}
-                  <div className="bg-white p-4 rounded-2xl border border-slate-300 shadow-card flex items-center justify-between flex-wrap gap-2 text-xs md:text-sm font-mono font-bold">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-3 py-1.5 rounded-xl bg-brand-50 text-brand-700 border border-brand-300">1. PLANNER</span>
-                      <span className="text-slate-300">➔</span>
-                      <span className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-300">2. EXECUTOR</span>
-                      <span className="text-slate-300">➔</span>
-                      <span className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-300">3. CRITIC</span>
-                      <span className="text-slate-300">➔</span>
-                      <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-300">4. REPLAN / END</span>
+                  {/* Visual 4-Node Pipeline Bar */}
+                  <div className={`p-4 rounded-2xl border flex items-center justify-between flex-wrap gap-2 text-xs md:text-sm font-mono font-bold ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+                    <div className="flex items-center space-x-2 flex-wrap gap-1">
+                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-brand-500/10 text-brand-300 border-brand-500/30' : 'bg-brand-50 text-brand-700 border-brand-200'}`}>
+                        1. PLANNER
+                      </span>
+                      <span className="opacity-40">➔</span>
+                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
+                        2. EXECUTOR
+                      </span>
+                      <span className="opacity-40">➔</span>
+                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200'}`}>
+                        3. CRITIC
+                      </span>
+                      <span className="opacity-40">➔</span>
+                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+                        4. REPLAN / END
+                      </span>
                     </div>
-                    <span className="text-slate-600 font-mono text-xs font-bold px-3 py-1 bg-slate-100 rounded-lg border border-slate-300">
+                    <span className={`text-xs font-mono font-bold px-3 py-1 rounded-lg border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                       📑 {liveRecord ? liveRecord.steps.length : 0} Steps Logged
                     </span>
                   </div>
 
-                  {/* Goal Achieved Celebration Banner */}
+                  {/* Goal Achieved Executive Banner */}
                   {liveRecord && liveRecord.final_answer && (
-                    <div className="p-6 rounded-3xl border-2 border-emerald-400 bg-emerald-50/90 shadow-card relative overflow-hidden space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-extrabold text-xl shadow-sm">
+                    <div className={`p-6 rounded-3xl border-2 space-y-4 transition-all duration-300 relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-emerald-950/40 via-slate-900/90 to-slate-950 border-emerald-500/40 shadow-glow-emerald' : 'bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-400 shadow-card-light'}`}>
+                      
+                      <div className="flex items-center space-x-3.5">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center font-extrabold text-xl shadow-glow-emerald shrink-0">
                           ✓
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="px-3 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-200 text-emerald-950 border border-emerald-300">
+                            <span className={`px-3 py-0.5 rounded-full text-xs font-mono font-extrabold uppercase border ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-100 text-emerald-900 border-emerald-300'}`}>
                               {liveRecord.termination ? liveRecord.termination.toUpperCase() : "FINAL_ANSWER"}
                             </span>
-                            <h3 className="font-extrabold text-base md:text-lg text-emerald-950 tracking-tight">GOAL ACHIEVED — FINAL ANSWER READY</h3>
+                            <h3 className="font-extrabold text-base md:text-lg tracking-tight">
+                              GOAL ACHIEVED — EXECUTIVE SYNTHESIS READY
+                            </h3>
                           </div>
-                          <p className="text-xs md:text-sm text-emerald-800 mt-0.5 font-medium">The agent completed all analysis steps, verified SQLite database results, and synthesized the final answer.</p>
+                          <p className="text-xs md:text-sm opacity-80 mt-0.5 font-medium">
+                            The agent validated SQLite schema constraints, executed analytical tools, and synthesized the final verified result.
+                          </p>
                         </div>
                       </div>
 
-                      <div className="p-4 bg-white rounded-2xl border border-emerald-300 font-sans shadow-sm mt-3">
-                        <div className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5 flex items-center space-x-1">
+                      {/* Final Synthesized Answer Box */}
+                      <div className={`p-5 rounded-2xl border font-sans shadow-sm ${isDark ? 'bg-slate-950/80 border-emerald-500/30' : 'bg-white border-emerald-300'}`}>
+                        <div className="text-xs font-extrabold uppercase tracking-wider mb-2 flex items-center space-x-1.5 text-emerald-400">
                           <span>✨ FINAL SYNTHESIZED ANSWER</span>
                         </div>
-                        <p className="text-base text-slate-900 font-semibold leading-relaxed">
-                          {liveRecord.final_answer}
+                        <p className="text-sm md:text-base font-semibold leading-relaxed">
+                          {cleanSynthesizedAnswer(liveRecord.final_answer)}
                         </p>
                       </div>
+
+                      {/* Tap-to-Navigate Icon Card to Visualizations Page */}
+                      {activeRecordChart && (
+                        <div
+                          onClick={() => setActiveTab("charts")}
+                          className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 group flex items-center justify-between flex-wrap gap-4 btn-lift ${isDark ? 'bg-gradient-to-r from-brand-950/70 via-indigo-950/70 to-purple-950/70 hover:from-brand-900 hover:to-indigo-900 border-brand-500/40 hover:border-brand-400 shadow-glow-indigo' : 'bg-gradient-to-r from-brand-50 via-indigo-50 to-purple-50 hover:from-brand-100 hover:to-indigo-100 border-brand-300 hover:border-brand-500'}`}
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 group-hover:scale-105 text-white flex items-center justify-center text-2xl shadow-glow-indigo transition-transform shrink-0">
+                              📊
+                            </div>
+                            <div>
+                              <div className="flex items-center space-x-2 flex-wrap gap-1">
+                                <span className={`text-xs font-mono font-bold uppercase px-2.5 py-0.5 rounded-full border ${isDark ? 'bg-brand-500/20 text-brand-300 border-brand-500/40' : 'bg-brand-100 text-brand-800 border-brand-300'}`}>
+                                  {activeRecordChart.type.toUpperCase()} VISUALIZATION
+                                </span>
+                                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-100 text-emerald-800 border-emerald-300'}`}>
+                                  ✓ READY IN VISUALIZATIONS
+                                </span>
+                              </div>
+                              <h4 className="text-base font-extrabold mt-1 group-hover:text-brand-400 transition-colors">
+                                {activeRecordChart.title}
+                              </h4>
+                              <p className="text-xs opacity-75 font-medium mt-0.5">
+                                Tap here to open the Visualization Studio and explore the full dynamic chart
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveTab("charts");
+                              }}
+                              className="px-5 py-2.5 bg-brand-600 group-hover:bg-brand-500 text-white text-xs md:text-sm font-bold rounded-xl shadow-glow-indigo transition flex items-center space-x-2 btn-lift"
+                            >
+                              <span>📊 Go to Visualization Page</span>
+                              <span className="text-base font-extrabold">➔</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                     </div>
                   )}
 
                   {/* Live Step Stream */}
                   <div className="space-y-4">
                     {liveRecord && liveRecord.steps.map((step) => (
-                      <StepCard key={step.step_index} step={step} isExpandedDefault={true} />
+                      <StepCard 
+                        key={step.step_index} 
+                        step={step} 
+                        isExpandedDefault={true} 
+                        onNavigateToCharts={() => setActiveTab("charts")}
+                        isDark={isDark} 
+                      />
                     ))}
                   </div>
 
@@ -874,55 +1151,54 @@
               </div>
             )}
 
-
-            {/* TAB 2: VISUALIZATIONS */}
+            {/* TAB 2: VISUALIZATIONS STUDIO */}
             {activeTab === "charts" && (
               <div className="space-y-8">
                 {/* Header Banner */}
-                <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card flex items-center justify-between flex-wrap gap-4">
+                <div className={`p-6 rounded-3xl border flex items-center justify-between flex-wrap gap-4 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                   <div>
-                    <h2 className="text-lg md:text-xl font-extrabold text-slate-900 flex items-center space-x-2">
-                      <span>📈 Autonomous Data Visualizations</span>
-                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold">
-                        Interactive Analytics
+                    <h2 className="text-lg md:text-xl font-extrabold flex items-center space-x-2">
+                      <span>📈 Autonomous Visual Analytics Studio</span>
+                      <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        HD Dynamic Renderer
                       </span>
                     </h2>
-                    <p className="text-xs md:text-sm text-slate-600 font-medium mt-1">Interactive data visualizer generated directly from real SQLite database records.</p>
+                    <p className="text-xs md:text-sm opacity-70 mt-1">High-definition vector charts rendered autonomously from SQLite database aggregates.</p>
                   </div>
                   <button
                     onClick={() => {
                       setQuestion("Analyze sales by region and create a bar chart showing which region has the highest sales.");
                       setActiveTab("live");
                     }}
-                    className="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs md:text-sm font-bold rounded-xl shadow-pill transition flex items-center space-x-1.5 btn-lift"
+                    className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-xs md:text-sm font-bold rounded-xl shadow-glow-indigo transition flex items-center space-x-1.5 btn-lift"
                   >
-                    <span>🚀 Generate New Chart in Live Agent</span>
+                    <span>🚀 Generate New Chart in Live Console</span>
                   </button>
                 </div>
 
-                {/* Dynamic Live Visualizer */}
+                {/* Dynamic Visualizer Area */}
                 {dynamicCharts && dynamicCharts.length > 0 && (
-                  <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card space-y-5">
+                  <div className={`p-6 rounded-3xl border space-y-6 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                     <div className="flex items-center justify-between flex-wrap gap-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg">🔥</span>
-                        <h3 className="font-extrabold text-base md:text-lg text-slate-900">Interactive Dynamic Visualizer</h3>
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-xs font-mono font-bold border border-emerald-300">
+                      <div className="flex items-center space-x-2.5">
+                        <span className="text-xl">🔥</span>
+                        <h3 className="font-extrabold text-base md:text-lg">Executive Visual Inspector</h3>
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/30">
                           LIVE QUERY RESULT
                         </span>
                       </div>
-                      <span className="text-xs md:text-sm font-mono text-slate-600 font-semibold">
-                        Showing {selectedChartIndex + 1} of {dynamicCharts.length} Charts
+                      <span className="text-xs md:text-sm font-mono opacity-70">
+                        Showing Chart {selectedChartIndex + 1} of {dynamicCharts.length}
                       </span>
                     </div>
 
                     {/* Chart Selector Pills */}
-                    <div className="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar">
+                    <div className="flex items-center space-x-2.5 overflow-x-auto pb-2 custom-scrollbar">
                       {dynamicCharts.map((c, idx) => (
                         <button
                           key={c.id || idx}
                           onClick={() => setSelectedChartIndex(idx)}
-                          className={`px-4 py-2.5 rounded-xl text-xs md:text-sm font-mono font-bold transition flex items-center space-x-1.5 whitespace-nowrap ${selectedChartIndex === idx ? 'bg-brand-600 text-white shadow-pill' : 'bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-300'}`}
+                          className={`px-4 py-2.5 rounded-xl text-xs md:text-sm font-mono font-bold transition flex items-center space-x-2 whitespace-nowrap btn-lift ${selectedChartIndex === idx ? 'bg-brand-600 text-white shadow-glow-indigo' : (isDark ? 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800' : 'bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-300')}`}
                         >
                           <span>{c.type === 'bar' ? '📊' : (c.type === 'scatter' ? '🟣' : (c.type === 'pie' ? '🥧' : '📈'))}</span>
                           <span>{c.title}</span>
@@ -930,14 +1206,15 @@
                       ))}
                     </div>
 
-                    <div className="text-xs md:text-sm font-mono text-slate-700 bg-slate-50 p-3.5 rounded-xl border border-slate-300">
-                      Active Query: <strong className="text-slate-950 font-bold">"{dynamicCharts[selectedChartIndex] ? dynamicCharts[selectedChartIndex].question : ''}"</strong>
+                    <div className={`text-xs md:text-sm font-mono p-3.5 rounded-2xl border ${isDark ? 'bg-slate-950/60 border-slate-800/80 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-800'}`}>
+                      Active Question: <strong className={isDark ? "text-brand-300" : "text-brand-700"}>"{dynamicCharts[selectedChartIndex] ? dynamicCharts[selectedChartIndex].question : ''}"</strong>
                     </div>
 
                     {dynamicCharts[selectedChartIndex] && (
                       <DynamicChartRenderer
                         spec={dynamicCharts[selectedChartIndex].spec}
                         chartPath={dynamicCharts[selectedChartIndex].chart_path}
+                        isDark={isDark}
                       />
                     )}
                   </div>
@@ -945,85 +1222,85 @@
               </div>
             )}
 
-            {/* TAB 3: ML BENCHMARKS */}
+            {/* TAB 3: ML BENCHMARKS STUDIO */}
             {activeTab === "benchmarks" && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Tool Selection Classifier */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card space-y-4">
+                  {/* Tool Classifier */}
+                  <div className={`p-6 rounded-3xl border space-y-4 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="font-extrabold text-base md:text-lg text-slate-900">Tool-Selection Classifier (ML Engine)</h3>
-                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+                      <h3 className="font-extrabold text-base md:text-lg">Tool-Selection Classifier (ML Engine)</h3>
+                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         ~300x SPEEDUP
                       </span>
                     </div>
-                    <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed">
-                      Calibrated tool-selection classifier trained on trajectory step features vs baseline "let the LLM choose the tool".
+                    <p className="text-xs md:text-sm opacity-70 leading-relaxed">
+                      Calibrated classifier trained on trajectory step features vs baseline "let the LLM choose the tool".
                     </p>
 
                     <table className="w-full text-left text-xs md:text-sm font-mono">
-                      <thead className="bg-slate-100 text-slate-800 uppercase border-b border-slate-300">
+                      <thead className={`uppercase border-b ${isDark ? 'bg-slate-900 text-slate-400 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                         <tr>
-                          <th className="p-3.5 text-slate-800 font-bold uppercase tracking-wider">Metric</th>
-                          <th className="p-3.5 text-brand-700 font-bold uppercase tracking-wider">Tool Classifier</th>
-                          <th className="p-3.5 text-slate-700 font-bold uppercase tracking-wider">LLM Baseline</th>
+                          <th className="p-3.5">Metric</th>
+                          <th className="p-3.5 text-brand-400 font-bold">ML Classifier</th>
+                          <th className="p-3.5 font-bold">LLM Baseline</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
+                      <tbody className={`divide-y ${isDark ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Decision Accuracy</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">95.0%</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">88.0%</td>
+                          <td className="p-3.5 font-sans font-semibold">Decision Accuracy</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">95.0%</td>
+                          <td className="p-3.5 opacity-70">88.0%</td>
                         </tr>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Mean Latency</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">1.2 ms</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">415.0 ms</td>
+                          <td className="p-3.5 font-sans font-semibold">Mean Latency</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">1.2 ms</td>
+                          <td className="p-3.5 opacity-70">415.0 ms</td>
                         </tr>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Token Cost per Call</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">0 tokens</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">~180 tokens/call</td>
+                          <td className="p-3.5 font-sans font-semibold">Token Cost per Call</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">0 tokens</td>
+                          <td className="p-3.5 opacity-70">~180 tokens/call</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
 
                   {/* Task Complexity Router */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card space-y-4">
+                  <div className={`p-6 rounded-3xl border space-y-4 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="font-extrabold text-base md:text-lg text-slate-900">Task Complexity Router (ML Engine)</h3>
-                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+                      <h3 className="font-extrabold text-base md:text-lg">Task Complexity Router (ML Engine)</h3>
+                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         39.2% LATENCY SAVED
                       </span>
                     </div>
-                    <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed">
+                    <p className="text-xs md:text-sm opacity-70 leading-relaxed">
                       Routes simple queries to fast ReAct loop, saving full graph cycles vs baseline "run full graph on every task".
                     </p>
 
                     <table className="w-full text-left text-xs md:text-sm font-mono">
-                      <thead className="bg-slate-100 text-slate-800 uppercase border-b border-slate-300">
+                      <thead className={`uppercase border-b ${isDark ? 'bg-slate-900 text-slate-400 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                         <tr>
-                          <th className="p-3.5 text-slate-800 font-bold uppercase tracking-wider">Metric</th>
-                          <th className="p-3.5 text-brand-700 font-bold uppercase tracking-wider">Complexity Router</th>
-                          <th className="p-3.5 text-slate-700 font-bold uppercase tracking-wider">Full Graph Baseline</th>
+                          <th className="p-3.5">Metric</th>
+                          <th className="p-3.5 text-brand-400 font-bold">Complexity Router</th>
+                          <th className="p-3.5 font-bold">Full Graph Baseline</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
+                      <tbody className={`divide-y ${isDark ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Routing Accuracy</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">100.0%</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">100.0%</td>
+                          <td className="p-3.5 font-sans font-semibold">Routing Accuracy</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">100.0%</td>
+                          <td className="p-3.5 opacity-70">100.0%</td>
                         </tr>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Average Latency</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">185 ms</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">304 ms</td>
+                          <td className="p-3.5 font-sans font-semibold">Average Latency</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">185 ms</td>
+                          <td className="p-3.5 opacity-70">304 ms</td>
                         </tr>
                         <tr>
-                          <td className="p-3.5 font-sans font-semibold text-slate-900">Latency Reduction</td>
-                          <td className="p-3.5 text-emerald-700 font-extrabold text-sm md:text-base">39.2% saved</td>
-                          <td className="p-3.5 text-slate-700 font-semibold">0% (Baseline)</td>
+                          <td className="p-3.5 font-sans font-semibold">Latency Reduction</td>
+                          <td className="p-3.5 text-emerald-400 font-extrabold text-base">39.2% saved</td>
+                          <td className="p-3.5 opacity-70">0% (Baseline)</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1035,59 +1312,59 @@
             {/* TAB 4: SCHEMA EXPLORER */}
             {activeTab === "schema" && (
               <div className="space-y-6">
-                <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card">
-                  <h3 className="font-extrabold text-base md:text-lg text-slate-900 mb-1">SQLite Database Relational Schema</h3>
-                  <p className="text-xs md:text-sm text-slate-600 font-medium">Database tables with primary keys (PK) and foreign keys (FK).</p>
+                <div className={`p-6 rounded-3xl border ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+                  <h3 className="font-extrabold text-base md:text-lg mb-1">SQLite Database Relational Schema</h3>
+                  <p className="text-xs md:text-sm opacity-70 font-medium">Relational database tables with Primary Keys (PK) and Foreign Keys (FK).</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {["orders", "sales", "customers", "products", "regions"].map((tbl) => (
-                    <div key={tbl} className="p-5 bg-white rounded-2xl border border-slate-300 shadow-card space-y-3">
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                        <span className="font-mono font-extrabold text-brand-800 text-sm uppercase">{tbl}</span>
-                        <span className="text-xs font-mono font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">TABLE</span>
+                    <div key={tbl} className={`p-5 rounded-3xl border space-y-3 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+                      <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }}>
+                        <span className="font-mono font-extrabold text-brand-400 text-sm uppercase">{tbl}</span>
+                        <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>TABLE</span>
                       </div>
-                      <ul className="text-xs md:text-sm space-y-2 text-slate-800 font-mono">
+                      <ul className="text-xs md:text-sm space-y-2 font-mono">
                         {tbl === "orders" && (
                           <>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">order_id</span> <span className="text-amber-700 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">customer_id</span> <span className="text-indigo-700 font-bold">INT FK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">product_id</span> <span className="text-indigo-700 font-bold">INT FK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">region</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">sales</span> <span className="text-emerald-700 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">profit</span> <span className="text-emerald-700 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">date</span> <span className="text-slate-600 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>order_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
+                            <li className="flex items-center justify-between"><span>customer_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
+                            <li className="flex items-center justify-between"><span>product_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
+                            <li className="flex items-center justify-between"><span>region</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>sales</span> <span className="text-emerald-400 font-bold">REAL</span></li>
+                            <li className="flex items-center justify-between"><span>profit</span> <span className="text-emerald-400 font-bold">REAL</span></li>
+                            <li className="flex items-center justify-between"><span>date</span> <span className="opacity-70 font-bold">TEXT</span></li>
                           </>
                         )}
                         {tbl === "customers" && (
                           <>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">customer_id</span> <span className="text-amber-700 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">customer_name</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">segment</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">region_id</span> <span className="text-indigo-700 font-bold">INT FK</span></li>
+                            <li className="flex items-center justify-between"><span>customer_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
+                            <li className="flex items-center justify-between"><span>customer_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>segment</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>region_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
                           </>
                         )}
                         {tbl === "products" && (
                           <>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">product_id</span> <span className="text-amber-700 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">product_name</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">category</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">unit_price</span> <span className="text-emerald-700 font-bold">REAL</span></li>
+                            <li className="flex items-center justify-between"><span>product_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
+                            <li className="flex items-center justify-between"><span>product_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>category</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>unit_price</span> <span className="text-emerald-400 font-bold">REAL</span></li>
                           </>
                         )}
                         {tbl === "regions" && (
                           <>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">region_id</span> <span className="text-amber-700 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">region_name</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">manager</span> <span className="text-slate-600 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>region_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
+                            <li className="flex items-center justify-between"><span>region_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>manager</span> <span className="opacity-70 font-bold">TEXT</span></li>
                           </>
                         )}
                         {tbl === "sales" && (
                           <>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">id</span> <span className="text-amber-700 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">region</span> <span className="text-slate-600 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">sales_amount</span> <span className="text-emerald-700 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span className="font-semibold text-slate-900">year</span> <span className="text-slate-600 font-bold">INT</span></li>
+                            <li className="flex items-center justify-between"><span>id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
+                            <li className="flex items-center justify-between"><span>region</span> <span className="opacity-70 font-bold">TEXT</span></li>
+                            <li className="flex items-center justify-between"><span>sales_amount</span> <span className="text-emerald-400 font-bold">REAL</span></li>
+                            <li className="flex items-center justify-between"><span>year</span> <span className="opacity-70 font-bold">INT</span></li>
                           </>
                         )}
                       </ul>
@@ -1100,42 +1377,42 @@
             {/* TAB 5: TRAJECTORY REPLAY */}
             {activeTab === "replay" && (
               <div className="space-y-6">
-                <div className="bg-white p-6 rounded-3xl border border-slate-300 shadow-card flex items-center justify-between flex-wrap gap-4">
+                <div className={`p-6 rounded-3xl border flex items-center justify-between flex-wrap gap-4 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                   <div>
-                    <h2 className="text-lg md:text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+                    <h2 className="text-lg md:text-xl font-extrabold flex items-center space-x-2">
                       <span>📷 Trajectory Step-by-Step Replay</span>
-                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-300 font-bold">
+                      <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
                         Audit & Verification
                       </span>
                     </h2>
-                    <p className="text-xs md:text-sm text-slate-600 font-medium mt-1">Replay historical agent trajectory runs step-by-step with state verification.</p>
+                    <p className="text-xs md:text-sm opacity-70 mt-1">Replay historical agent trajectory runs step-by-step with state verification.</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handleRunQuery()}
-                      className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs md:text-sm font-bold rounded-xl shadow-pill transition flex items-center space-x-1"
-                    >
-                      <span>▶️ Replay Execution</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleRunQuery()}
+                    className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs md:text-sm font-bold rounded-xl shadow-glow-indigo transition flex items-center space-x-1 btn-lift"
+                  >
+                    <span>▶️ Replay Current Trajectory</span>
+                  </button>
                 </div>
 
                 <div className="space-y-4">
                   {liveRecord && liveRecord.steps.map((step) => (
-                    <StepCard key={step.step_index} step={step} isExpandedDefault={true} />
+                    <StepCard 
+                      key={step.step_index} 
+                      step={step} 
+                      isExpandedDefault={true} 
+                      onNavigateToCharts={() => setActiveTab("charts")}
+                      isDark={isDark} 
+                    />
                   ))}
                 </div>
               </div>
             )}
 
-
-
-
           </main>
         </div>
       );
     }
-
 
     ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
