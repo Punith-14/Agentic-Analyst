@@ -111,9 +111,18 @@ class CriticScorer:
 
         lgbm_path = lgbm_path or (MODELS / "critic_lgbm_v1.joblib")
         if lgbm_path.exists():
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")     # sklearn version chatter
-                self.lgbm = joblib.load(lgbm_path)
+            try:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")     # sklearn version chatter
+                    self.lgbm = joblib.load(lgbm_path)
+            except Exception as e:                              # noqa: BLE001
+                # Unpickling an LGBMClassifier needs lightgbm importable, and
+                # it is in requirements-ml.txt rather than requirements.txt —
+                # so CI, which installs only the latter, gets here. Degrade
+                # rather than raise: layer D imports this module and an
+                # exception would take the orchestration tests down.
+                print(f"  critic: feature model unavailable "
+                      f"({type(e).__name__}: {e})")
 
         if use_text:
             bert_dir = bert_dir or self._best_bert_dir()
