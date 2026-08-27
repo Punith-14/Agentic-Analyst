@@ -1,0 +1,17 @@
+{
+  "threshold": 0.95,
+  "runs": 302,
+  "steps_before": 1030,
+  "steps_after": 783,
+  "steps_saved": 247,
+  "steps_saved_pct": 0.2398,
+  "failures_caught": 125,
+  "failures_caught_pct": 0.5708,
+  "answers_lost": 1,
+  "answers_lost_pct": 0.012,
+  "solve_rate_before": 0.2748,
+  "solve_rate_after": 0.2715,
+  "critic": "lgbm0.7+bert0.3",
+  "scope": "held-out test runs",
+  "min_step": 0
+}

@@ -1,0 +1,9 @@
+{
+  "format": "full_err",
+  "max_len": 256,
+  "model": "answerdotai/ModernBERT-base",
+  "target": "y_run_fails",
+  "proxy_pr_auc": 0.9598,
+  "features_pr_auc": 0.9626,
+  "base_rate": 0.7825
+}

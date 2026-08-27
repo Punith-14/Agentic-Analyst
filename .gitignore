@@ -60,14 +60,20 @@ data/charts/*.png
 data/trajectories/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].jsonl
 
 # --- large model weights ---------------------------------------------
-# The critic is small and committed. These are the LLM weights, which
-# Ollama manages — they must never be in git.
+# The LightGBM critic is 2.6 MB and IS committed. These are not.
 checkpoints/
 *.gguf
 *.safetensors
 *.bin
 *.pt
 *.onnx
+
+# Fine-tuned text critics: ~270 MB for distilbert, ~600 MB for ModernBERT.
+# Reproduce with `python scripts/train_bert.py`; the config that produced
+# each one is recorded in its meta.json, which is what actually matters.
+# Ignoring the whole directory rather than just the weights, so we don't
+# commit a model folder with the weights stripped out of it.
+models/critic_bert_*/
 
 # --- os / editor -----------------------------------------------------
 .DS_Store

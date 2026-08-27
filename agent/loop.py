@@ -36,6 +36,30 @@ class AgentConfig:
     max_repeats: int = 2        # same action_hash this many times -> stop
     max_consecutive_errors: int = 4
 
+    # --- learned early stopping -------------------------------------------
+    # None keeps the old behaviour exactly. Pass a CriticScorer to enable.
+    #
+    #     from agent.critic.infer import CriticScorer
+    #     cfg = AgentConfig(critic=CriticScorer.load())
+    #
+    # The guards above are rules someone wrote. This is a model that saw
+    # 5,461 labelled steps and predicts whether the run ends with a wrong
+    # answer. It fires on the same evidence a human would use — errors piling
+    # up, a query that looks wrong — but earlier, and it catches queries that
+    # run cleanly and answer the wrong question, which no rule here can see.
+    critic: object | None = None
+
+    # 0.694 gives 97.4% precision on the stop decision: of every 100 runs it
+    # stops, ~97 were going to fail anyway. Lower it to catch more failures
+    # and lose more good answers.
+    critic_threshold: float = 0.694
+
+    # Don't stop before this step. 0 means the critic may end a run on its
+    # very first action — defensible, since 59% of doomed runs are already
+    # detectable at step 0, but it leaves no room to recover. Raise it if
+    # losing correct answers matters more than saving steps.
+    critic_min_step: int = 0
+
 
 def _unknown_tool(tool: str, available: Sequence[str]) -> ToolResult:
     return ToolResult(
@@ -213,6 +237,32 @@ def run_agent(question: str,
                 print(f"    STOP: {consecutive_errors} errors in a row")
             break
 
+        # --- learned early stopping -----------------------------------
+        # Runs after the step is recorded, so the score is attached to the
+        # step that produced it and the trajectory stays complete. The critic
+        # never sees a future step: it is handed the history up to and
+        # including this one, which is exactly what it was trained on.
+        if cfg.critic is not None:
+            try:
+                p_fail = cfg.critic.score(question, steps)
+            except Exception as e:                       # noqa: BLE001
+                # Defended here and not only inside CriticScorer, because the
+                # critic is a plug-in point — anyone can pass an object with a
+                # .score() method. A critic that throws must cost us a score,
+                # not the run.
+                if cfg.verbose:
+                    print(f"    critic failed ({type(e).__name__}: {e}) — continuing")
+                p_fail = None
+            steps[-1].critic_score = p_fail
+            if (p_fail is not None
+                    and i >= cfg.critic_min_step
+                    and p_fail > cfg.critic_threshold):
+                termination = "critic_stop"
+                if cfg.verbose:
+                    print(f"    STOP: critic says P(fail) = {p_fail:.3f} "
+                          f"> {cfg.critic_threshold}")
+                break
+
     for s in steps:
         s.run_total_steps = len(steps)
 
@@ -236,7 +286,13 @@ def run_agent(question: str,
         # excludes the superseded batch by FILENAME. See README.
         context_policy=(f"full_history|schema={'full' if schema else 'names'}"
                         f"|guards=repeat{cfg.max_repeats},err{cfg.max_consecutive_errors}"
-                        f"|max_steps={cfg.max_steps}"),
+                        f"|max_steps={cfg.max_steps}"
+                        + (f"|critic@{cfg.critic_threshold}" if cfg.critic else "")),
+        # Runs with a critic attached have a different step distribution and
+        # must be filterable out of any later training set — a critic trained
+        # on runs it shortened is learning from its own decisions.
+        critic_version=(getattr(cfg.critic, "version", "unknown")
+                        if cfg.critic is not None else None),
     )
 
     return record
