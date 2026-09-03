@@ -7,6 +7,7 @@ import os
 import json
 import glob
 import mimetypes
+import sqlite3          # used by /api/schema — was missing, NameError on first call
 import sys
 from urllib.parse import urlparse, parse_qs
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -52,6 +53,11 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 Path("data/charts").mkdir(parents=True, exist_ok=True)
 
 router_ml = ComplexityRouter()
+if router_ml.model is None and os.path.exists("data/trajectories"):
+    try:
+        router_ml.train_on_trajectories()
+    except Exception:
+        pass
 
 tool_classifier_ml = ToolSelectionClassifier()
 
@@ -74,6 +80,7 @@ def _live_critic():
             print(f"critic unavailable ({type(e).__name__}: {e}) — "
                   f"steps will have no score")
     return _CRITIC
+
 
 
 class AgentApiHandler(SimpleHTTPRequestHandler):
@@ -164,8 +171,139 @@ class AgentApiHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": f"Run {run_id} not found."}).encode("utf-8"))
             return
 
-        # 4. API: ML Evaluation & Benchmark Metrics
+        # 4. API: Live Database Schema & Table Introspection
+        if path.startswith("/api/schema"):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            params = parse_qs(parsed_url.query)
+            target_db = params.get("db", [None])[0]
+
+            # ?db=chinook_1.db if given, otherwise whatever is connected.
+            #
+            # NO FALLBACK. This used to drop to analytics.db when the
+            # requested file was missing, and then to data.db — so asking for
+            # a database that didn't exist quietly returned the demo schema,
+            # and the user read it as theirs.
+            db_file = None
+            if target_db:
+                candidate = os.path.join("data", "db", os.path.basename(target_db))
+                if os.path.exists(candidate):
+                    db_file = candidate
+            elif current_db():
+                db_file = current_db()
+
+            if db_file is None:
+                self.wfile.write(json.dumps({
+                    "error": "No dataset connected. Choose a database to continue.",
+                    "database": None,
+                    "available_databases": sorted(
+                        os.path.basename(f) for f in glob.glob("data/db/*.db")),
+                    "tables": [],
+                }).encode("utf-8"))
+                return
+
+            abs_db_path = os.path.abspath(db_file)
+            
+            # List all available DB files in data/db
+            avail_dbs = [os.path.basename(f) for f in glob.glob("data/db/*.db")]
+            if not avail_dbs:
+                avail_dbs = ["analytics.db"]
+
+            schema_data = {"database": os.path.basename(db_file), "db_path": db_file, "available_databases": avail_dbs, "tables": []}
+            try:
+                conn = sqlite3.connect(abs_db_path, timeout=5.0)
+                cursor = conn.cursor()
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;")
+                table_names = [r[0] for r in cursor.fetchall()]
+                
+                def _safe_cell(v):
+                    if v is None or isinstance(v, (int, float, str, bool)):
+                        return v
+                    if isinstance(v, bytes):
+                        return v.decode("utf-8", errors="replace")
+                    return str(v)
+
+                for t in table_names:
+                    # Clean identifier
+                    safe_t = t.replace('"', '""')
+                    # Columns
+                    cursor.execute(f'PRAGMA table_info("{safe_t}");')
+                    cols = []
+                    for row in cursor.fetchall():
+                        cols.append({
+                            "cid": row[0],
+                            "name": str(row[1]),
+                            "type": str(row[2] or "TEXT"),
+                            "notnull": bool(row[3]),
+                            "default_value": str(row[4]) if row[4] is not None else None,
+                            "pk": bool(row[5])
+                        })
+                    
+                    # Foreign Keys
+                    cursor.execute(f'PRAGMA foreign_key_list("{safe_t}");')
+                    fks = []
+                    for fk in cursor.fetchall():
+                        fks.append({
+                            "from": str(fk[3]),
+                            "to_table": str(fk[2]),
+                            "to_col": str(fk[4])
+                        })
+                    
+                    # Row Count
+                    try:
+                        cursor.execute(f'SELECT COUNT(*) FROM "{safe_t}";')
+                        row_count = int(cursor.fetchone()[0])
+                    except Exception:
+                        row_count = 0
+
+                    # Sample 3 rows
+                    sample_rows = []
+                    try:
+                        cursor.execute(f'SELECT * FROM "{safe_t}" LIMIT 3;')
+                        col_names = [c["name"] for c in cols]
+                        for r in cursor.fetchall():
+                            sample_rows.append({col_names[idx]: _safe_cell(r[idx]) for idx in range(min(len(col_names), len(r)))})
+                    except Exception:
+                        sample_rows = []
+
+                    schema_data["tables"].append({
+                        "name": t,
+                        "row_count": row_count,
+                        "columns": cols,
+                        "foreign_keys": fks,
+                        "sample_rows": sample_rows
+                    })
+                conn.close()
+            except Exception as e:
+                schema_data["error"] = str(e)
+            
+            self.wfile.write(json.dumps(schema_data).encode("utf-8"))
+            return
+
+
+
+        # 5. API: Real-Time Complexity Route Prediction
+        if path == "/api/route":
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            params = parse_qs(parsed_url.query)
+            q = params.get("q", [""])[0]
+            decision, conf, lat = router_ml.route_with_confidence(q)
+            res = {
+                "decision": decision,
+                "confidence": round(conf, 3),
+                "latency_ms": round(lat, 2),
+                "label": "Simple Query (Fast ReAct)" if decision == "simple" else "Complex Query (Full Graph)"
+            }
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        # 5. API: ML Evaluation & Benchmark Metrics
         if path == "/api/ml-metrics":
+
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -249,20 +387,14 @@ class AgentApiHandler(SimpleHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
-        if path == "/api/schema":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            params = parse_qs(parsed_url.query)
-            table_param = params.get("table", [None])[0]
-            # No db_path: get_schema uses whatever was selected, and returns a
-            # readable error if nothing was.
-            schema_res = get_schema(table=table_param)
-            self.wfile.write(json.dumps(schema_res.model_dump()).encode("utf-8"))
-            return
+        # (my simpler /api/schema removed — the handler above is richer:
+        #  column types, PK flags, FK details, sample rows, and safely
+        #  quoted identifiers. It now refuses rather than falling back.)
+
 
         # 6. Static Charts
         if path.startswith("/data/charts/") or path.startswith("/charts/"):
+
             fname = path.split("/")[-1]
             chart_full_path = os.path.join("data/charts", fname)
             if os.path.exists(chart_full_path):
@@ -379,51 +511,70 @@ class AgentApiHandler(SimpleHTTPRequestHandler):
             else:
                 route_decision = "full"
 
-            if route_decision == "simple":
-                # run_agent needs a model, the tool registry and the specs —
-                # this used to call it with only the question and raised
-                # TypeError, so every query routed to "simple" returned an
-                # empty 500. Only the "full" path had ever been exercised.
-                #
-                # This is the real ReAct loop: an LLM reads the schema, writes
-                # SQL, sees the result, and decides what to do next. The "full"
-                # path below routes by keyword instead.
-                from agent.llm import OllamaLLM
-                from tools import TOOL_SPECS, TOOLS
-                from tools.sql_tools import get_schema
+            try:
+                if route_decision == "simple":
+                    # run_agent needs a model, the tool registry and the specs —
+                    # this used to call it with only the question and raised
+                    # TypeError, so every query routed to "simple" returned an
+                    # empty 500. Only the "full" path had ever been exercised.
+                    #
+                    # This is the real ReAct loop: an LLM reads the schema, writes
+                    # SQL, sees the result, and decides what to do next. The "full"
+                    # path below routes by keyword instead.
+                    from agent.llm import OllamaLLM
+                    from tools import TOOL_SPECS, TOOLS
+                    from tools.sql_tools import get_schema
 
-                # Attach the critic so every step gets a score. Without this,
-                # critic_score is None on every step and the UI has nothing to
-                # show — which is exactly what happened.
-                #
-                # Threshold 1.1 means it scores but never stops. The score is
-                # what we want to display; automatic early stopping during a
-                # live demo would cut runs off mid-explanation. Set it to 0.9
-                # to see the critic actually intervene.
-                critic = _live_critic()
-                record = run_agent(
-                    question=question,
-                    llm=OllamaLLM(),
-                    tools=TOOLS,
-                    tool_specs=TOOL_SPECS,
-                    schema=schema_res.data if (schema_res := get_schema()).status == "ok" else None,
-                    task_id=task_id,
-                    config=AgentConfig(verbose=False, critic=critic,
-                                       critic_threshold=1.1),
-                )
-            else:
-                record = run_graph_to_record(question=question, task_id=task_id, enable_best_of_n=enable_best_of_n)
+                    # Attach the critic so every step gets a score. Without this,
+                    # critic_score is None on every step and the UI has nothing to
+                    # show — which is exactly what happened.
+                    #
+                    # Threshold 1.1 means it scores but never stops. The score is
+                    # what we want to display; automatic early stopping during a
+                    # live demo would cut runs off mid-explanation. Set it to 0.9
+                    # to see the critic actually intervene.
+                    critic = _live_critic()
+                    record = run_agent(
+                        question=question,
+                        llm=OllamaLLM(),
+                        tools=TOOLS,
+                        tool_specs=TOOL_SPECS,
+                        schema=schema_res.data if (schema_res := get_schema()).status == "ok" else None,
+                        task_id=task_id,
+                        config=AgentConfig(verbose=False, critic=critic,
+                                           critic_threshold=1.1),
+                    )
+                else:
+                    record = run_graph_to_record(question=question, task_id=task_id, enable_best_of_n=enable_best_of_n)
 
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            response_json = record.model_dump()
-            response_json["routed_mode"] = route_decision
-            self.wfile.write(json.dumps(response_json).encode("utf-8"))
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                response_json = record.model_dump()
+                response_json["routed_mode"] = route_decision
+                self.wfile.write(json.dumps(response_json).encode("utf-8"))
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                err_payload = {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+                self.wfile.write(json.dumps(err_payload).encode("utf-8"))
             return
 
 
+        # API: Train Complexity Router
+        if path == "/api/train-router":
+            res = router_ml.train_on_trajectories()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
         self.send_response(404)
+
         self.end_headers()
 
 
