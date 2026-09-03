@@ -8,14 +8,15 @@ import traceback
 from typing import Dict, Any, List, Optional
 from contracts import ToolResult
 
-DEFAULT_DB_PATH = "data/db/analytics.db"
+# No default database — see tools/db.py for why.
+from tools.db import no_database, resolve
 
 def ml_regress(
     table: str = "orders",
     target: str = "sales",
     features: Optional[List[str]] = None,
     model_type: str = "linear",
-    db_path: str = DEFAULT_DB_PATH,
+    db_path: str = None,
     **kwargs
 ) -> ToolResult:
     """Train a scikit-learn regression model on database table columns.
@@ -26,6 +27,9 @@ def ml_regress(
         features = ["quantity", "discount"]
 
     try:
+        db_path = resolve(db_path)
+        if db_path is None:
+            return no_database("ml_regress")
         conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=10.0)
         cursor = conn.cursor()
 
@@ -152,7 +156,7 @@ def ml_cluster(
     table: str = "orders",
     features: Optional[List[str]] = None,
     k: int = 3,
-    db_path: str = DEFAULT_DB_PATH,
+    db_path: str = None,
     **kwargs
 ) -> ToolResult:
     """Perform KMeans clustering on database table features.
@@ -163,6 +167,9 @@ def ml_cluster(
         features = ["sales", "profit"]
 
     try:
+        db_path = resolve(db_path)
+        if db_path is None:
+            return no_database("ml_cluster")
         conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=10.0)
         cursor = conn.cursor()
 

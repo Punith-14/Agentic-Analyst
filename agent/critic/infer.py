@@ -298,7 +298,17 @@ def _shared_scorer() -> Optional[CriticScorer]:
     global _SHARED, _LOAD_FAILED
     if _SHARED is None and not _LOAD_FAILED:
         try:
-            _SHARED = CriticScorer.load()
+            # FEATURE MODEL ONLY — 2.6 MB, loads instantly.
+            #
+            # use_text=True would pull ModernBERT: 600 MB onto a 6 GB card that
+            # is usually already hosting the language model. graph.py builds a
+            # Critic() inside every node, and pytest imports graph.py during
+            # collection, so that load happened just by running the tests.
+            #
+            # The ensemble is worth +0.0026 PR-AUC. It is not worth a 600 MB
+            # load in a code path that only wants a step-quality number. Use
+            # CriticScorer.load() directly when you actually want both.
+            _SHARED = CriticScorer.load(use_text=False)
         except Exception:                                       # noqa: BLE001
             _LOAD_FAILED = True                                 # don't retry every call
     return _SHARED

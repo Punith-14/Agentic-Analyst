@@ -30,23 +30,25 @@ TOOLS: Dict[str, Callable[..., ToolResult]] = {
 TOOL_SPECS: List[Dict[str, Any]] = [
     {
         "name": "run_sql",
-        "description": "Run a read-only SQL query against the analytics database.",
+        "description": "Run a read-only SQL query against the connected database.",
         "args": {
             "query": "string - a valid SQLite SELECT statement",
-            "db_path": "optional string - database path (defaults to data/db/analytics.db)"
         },
         "returns": "up to 20 rows, plus the true row count and truncation status",
         "example": {"query": "SELECT region, SUM(sales) FROM orders GROUP BY region;"}
     },
     {
+        # This text is sent to the model verbatim, so it has to match what the
+        # tool does. It used to say "returns table names" — the model believed
+        # it and stopped asking for more, which is half of why it guessed
+        # column names.
         "name": "get_schema",
-        "description": "Inspect database schema. If table is None, returns table names. If table name given, returns column names, types, primary keys, and foreign keys.",
+        "description": "Inspect the database schema. With no arguments, returns EVERY table with its columns and foreign keys. Pass a table name for that table's column types and primary keys.",
         "args": {
-            "table": "optional string - table name to inspect (None to list all tables)",
-            "db_path": "optional string - database path"
+            "table": "optional string - one table to inspect. Omit for the whole schema.",
         },
-        "returns": "table list or column schema definitions",
-        "example": {"table": "orders"}
+        "returns": "the full schema, or one table's column definitions",
+        "example": {},
     },
     {
         "name": "python_repl",

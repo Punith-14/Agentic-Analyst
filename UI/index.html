@@ -149,164 +149,18 @@
     }
 
     // Default Seed Trajectories
-    const FALLBACK_TRAJECTORIES = [
-      {
-        run_id: "r-94821a",
-        task_id: "t001",
-        question: "Which region had the highest total sales in 2023?",
-        steps: [
-          {
-            run_id: "r-94821a",
-            step_index: 1,
-            timestamp: "2026-08-26T12:00:00Z",
-            thought: "Inspecting database schema to verify column structures for orders and regions tables.",
-            action: { tool: "get_schema", args: { table: "orders" }, is_final: false },
-            observation: {
-              status: "ok",
-              tool: "get_schema",
-              data: { table: "orders", columns: ["order_id", "customer_id", "product_id", "region", "sales", "profit", "date"] },
-              duration_ms: 4,
-              truncated: false,
-              row_count: 7
-            },
-            status: "continue",
-            duration_ms: 82,
-            tokens_in_prompt: 160,
-            label_llm: 0.98
-          },
-          {
-            run_id: "r-94821a",
-            step_index: 2,
-            timestamp: "2026-08-26T12:00:01Z",
-            thought: "Executing SQL aggregation query to calculate sum of sales grouped by region for year 2023.",
-            action: {
-              tool: "run_sql",
-              args: { query: "SELECT region, SUM(sales) AS total_sales FROM orders WHERE strftime('%Y', date)='2023' GROUP BY region ORDER BY total_sales DESC LIMIT 1;" },
-              is_final: false
-            },
-            observation: {
-              status: "ok",
-              tool: "run_sql",
-              data: [{ region: "North America", total_sales: 180500.0 }],
-              duration_ms: 8,
-              truncated: false,
-              row_count: 1
-            },
-            status: "continue",
-            duration_ms: 110,
-            tokens_in_prompt: 290,
-            label_llm: 0.99
-          },
-          {
-            run_id: "r-94821a",
-            step_index: 3,
-            timestamp: "2026-08-26T12:00:02Z",
-            thought: "Synthesizing retrieved database observations into the final executive answer.",
-            action: {
-              tool: "python_repl",
-              args: { code: "# final synthesis" },
-              is_final: true,
-              final_answer: "The region 'North America' recorded the highest total sales in 2023 with $180,500.00."
-            },
-            observation: { status: "ok", tool: "python_repl", data: "Success", duration_ms: 2 },
-            status: "final",
-            duration_ms: 70,
-            tokens_in_prompt: 360,
-            label_llm: 1.0
-          }
-        ],
-        termination: "final_answer",
-        final_answer: "The region 'North America' recorded the highest total sales in 2023 with $180,500.00.",
-        correct: true,
-        total_duration_ms: 262,
-        total_tokens: 810
-      }
-    ];
+    // FALLBACK_TRAJECTORIES removed. It held a canned successful run —
+    // "North America, total_sales: 180500" — used as the opening state and
+    // as the error fallback, so the page showed a fabricated answer both
+    // before anything ran and whenever a real run failed. Nothing on screen
+    // should look like an answer unless it is one.
 
     // Enterprise Preset Tasks Library
-    const PRESET_TASKS = [
-      { 
-        task_id: "t001", 
-        category: "SQL", 
-        title: "Highest Regional Sales in 2023", 
-        question: "Which region had the highest total sales in 2023?", 
-        difficulty: "EASY", 
-        latency: "~180ms",
-        tag: "SQL Aggregation" 
-      },
-      { 
-        task_id: "t008", 
-        category: "CHART", 
-        title: "Regional Sales Bar Chart", 
-        question: "Analyze sales by region and create a bar chart showing which region has the highest sales.", 
-        difficulty: "MEDIUM", 
-        latency: "~240ms",
-        tag: "Bar Visualizer" 
-      },
-      { 
-        task_id: "t009", 
-        category: "CHART", 
-        title: "Revenue by Segment (Pie Chart)", 
-        question: "Plot a pie chart of revenue by customer segment", 
-        difficulty: "MEDIUM", 
-        latency: "~220ms",
-        tag: "Pie Breakdown" 
-      },
-      { 
-        task_id: "t010", 
-        category: "CHART", 
-        title: "Sales vs Profit Scatter Plot", 
-        question: "Create a scatter plot showing the relationship between sales and profit", 
-        difficulty: "MEDIUM", 
-        latency: "~250ms",
-        tag: "Scatter Trend" 
-      },
-      { 
-        task_id: "t004", 
-        category: "SQL", 
-        title: "Hardware Buyers 3-Table Join", 
-        question: "List all customers who purchased Hardware products in 2024 and calculate total revenue across customer segments with joins", 
-        difficulty: "HARD", 
-        latency: "~290ms",
-        tag: "3-Table Join" 
-      },
-      { 
-        task_id: "t002", 
-        category: "SQL", 
-        title: "Enterprise Customer Profits", 
-        question: "What is the total profit generated by Enterprise customers in 2023?", 
-        difficulty: "MEDIUM", 
-        latency: "~210ms",
-        tag: "Filtered Sum" 
-      },
-      { 
-        task_id: "t003", 
-        category: "SQL", 
-        title: "Top Revenue Product Category", 
-        question: "Which product category produced the highest total revenue across all years?", 
-        difficulty: "MEDIUM", 
-        latency: "~200ms",
-        tag: "Category Join" 
-      },
-      { 
-        task_id: "t007", 
-        category: "SQL", 
-        title: "Lowest Sales Manager Join", 
-        question: "Find the manager for the region with the lowest sales in 2023 using a join between regions and orders", 
-        difficulty: "HARD", 
-        latency: "~310ms",
-        tag: "Multi-Table Join" 
-      },
-      { 
-        task_id: "t011", 
-        category: "STATS", 
-        title: "Statistical Correlation (Pearson)", 
-        question: "Calculate statistical correlation between sales and profit", 
-        difficulty: "HARD", 
-        latency: "~190ms",
-        tag: "Stats ML" 
-      }
-    ];
+    // PRESET_TASKS removed — 83 lines of hardcoded questions written
+    // against the `analytics` demo database. Connected to chinook_1 or
+    // college_2 they queried tables that do not exist, so every click was
+    // a guaranteed failure. The real suite now comes from /api/tasks,
+    // filtered to whatever is connected.
 
     // High-Definition Dynamic SVG Chart Renderer
     function DynamicChartRenderer({ spec, chartPath, isDark = true }) {
@@ -531,6 +385,20 @@
                 <span className={`text-xs md:text-sm px-3.5 py-1 rounded-xl font-bold flex items-center space-x-1 border ${isError ? (isDark ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-300') : (isDark ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-300')}`}>
                   <span>{isError ? '✕ ERROR' : '✓ SUCCESS'}</span>
                 </span>
+
+                {/* Per-step critic score is NOT displayed, deliberately.
+                    It is still computed and stored on every step — see
+                    critic_score in contracts.py — but showing it live was
+                    misleading: the critic called a clean 3-step run DOOMED
+                    at 0.91.
+                    Cause: duration_ms is one of its 25 features, and the
+                    first step of a live run takes ~8.6s while Ollama loads
+                    the model into VRAM. Only 0.1% of training steps were
+                    that slow, so a cold start looks exactly like a
+                    struggling run. The feature encodes the environment, not
+                    the agent's behaviour.
+                    The measured results — where inference conditions match
+                    training — are on the ML Engine tab. */}
               </div>
             </div>
 
@@ -689,76 +557,102 @@
       const [isRunning, setIsRunning] = useState(false);
       const [routerMode, setRouterMode] = useState("auto");
       const [enableBestOfN, setEnableBestOfN] = useState(true);
-      const [liveRecord, setLiveRecord] = useState(FALLBACK_TRAJECTORIES[0]);
+      // null until a query actually runs. This used to start as
+      // FALLBACK_TRAJECTORIES[0] — a canned successful run — so the page
+      // opened showing results for a question nobody had asked, against data
+      // nobody had connected. Same reason the backend no longer defaults to a
+      // demo database: nothing on screen should look like an answer unless it
+      // is one.
+      const [liveRecord, setLiveRecord] = useState(null);
+      const [runError, setRunError] = useState(null);
 
       // Dynamic Charts Collection
       const [selectedChartIndex, setSelectedChartIndex] = useState(0);
-      const [dynamicCharts, setDynamicCharts] = useState([
-        {
-          id: "chart-bar-regional",
-          question: "Analyze sales by region and create a bar chart showing which region has the highest sales.",
-          time: "Just now",
-          chart_path: "data/charts/chart_bar_sample.png",
-          type: "bar",
-          title: "Sales by Region (2023)",
-          spec: {
-            type: "bar",
-            title: "Sales by Region (2023)",
-            x: ["North America", "Asia", "Europe", "Middle East", "Latin America"],
-            y: [180500, 135000, 125000, 85000, 58000],
-            x_label: "Region",
-            y_label: "Total Sales ($)"
-          }
-        },
-        {
-          id: "chart-scatter-profit",
-          question: "Create a scatter plot showing the relationship between sales and profit",
-          time: "Earlier",
-          chart_path: "data/charts/chart_scatter_sample.png",
-          type: "scatter",
-          title: "Sales vs Profit Correlation",
-          spec: {
-            type: "scatter",
-            title: "Sales vs Profit Correlation",
-            x: [1200, 2400, 3100, 4500, 5200, 6800, 7500, 8900, 10200, 11500, 13000, 14500, 16000, 18000, 20500],
-            y: [320, 580, 810, 1150, 1320, 1750, 1920, 2300, 2650, 2980, 3400, 3750, 4200, 4650, 5300],
-            x_label: "Sales ($)",
-            y_label: "Profit ($)"
-          }
-        },
-        {
-          id: "chart-pie-segments",
-          question: "Plot a pie chart of revenue by customer segment",
-          time: "Earlier",
-          chart_path: "data/charts/chart_pie_sample.png",
-          type: "pie",
-          title: "Revenue by Customer Segment",
-          spec: {
-            type: "pie",
-            title: "Revenue by Customer Segment",
-            x: ["Enterprise", "SMB", "Consumer"],
-            y: [338000, 157000, 88000],
-            x_label: "Segment",
-            y_label: "Revenue ($)"
-          }
-        },
-        {
-          id: "chart-line-trend",
-          question: "Plot a line chart of sales trajectory trend over time",
-          time: "Earlier",
-          chart_path: "data/charts/chart_line_sample.png",
-          type: "line",
-          title: "Quarterly Sales Growth Trajectory",
-          spec: {
-            type: "line",
-            title: "Quarterly Sales Growth Trajectory",
-            x: ["2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4", "2023 Q1", "2023 Q2", "2023 Q3", "2023 Q4", "2024 Q1", "2024 Q2"],
-            y: [42000, 59000, 78000, 95000, 125000, 148000, 180000, 155000, 165000, 210000],
-            x_label: "Quarter",
-            y_label: "Sales ($)"
-          }
+      // --- connected dataset -------------------------------------------
+      // The backend no longer falls back to a demo database. Nothing is
+      // connected until the user picks one, and every query errors until
+      // then — deliberately, so a failed upload can never be answered with
+      // invented numbers.
+      const [dbInfo, setDbInfo] = useState({ connected: false, available: [] });
+      const [dbPath, setDbPath] = useState("");
+      const [dbError, setDbError] = useState(null);
+
+      const refreshDb = async () => {
+        try {
+          const res = await fetch("/api/database");
+          if (res.ok) setDbInfo(await res.json());
+        } catch (e) {
+          setDbError("Could not reach the server.");
         }
-      ]);
+      };
+
+      // Live schema and task list, both keyed to the connected database.
+      //
+      // Both panels used to be hardcoded arrays describing the `analytics`
+      // demo database. Connected to chinook_1, the Schema tab still listed
+      // `orders`, `customers`, `products` — tables that do not exist there —
+      // and every preset question queried them. Confidently wrong on both
+      // counts, and the endpoints to do it properly already existed.
+      const [schema, setSchema] = useState({});
+      const [schemaError, setSchemaError] = useState(null);
+      const [tasks, setTasks] = useState([]);
+
+      const refreshSchema = async () => {
+        setSchemaError(null);
+        try {
+          const res = await fetch("/api/schema");
+          const data = await res.json();
+          if (data.status === "ok" && data.data) setSchema(data.data);
+          else { setSchema({}); setSchemaError(data.error || "Could not read the schema."); }
+        } catch (e) {
+          setSchema({}); setSchemaError("Could not reach the server.");
+        }
+      };
+
+      const [criticMetrics, setCriticMetrics] = useState(null);
+
+      useEffect(() => {
+        refreshDb();
+        fetch("/api/critic-metrics")
+          .then(r => r.json()).then(setCriticMetrics).catch(() => {});
+      }, []);
+
+      // Re-read whenever the connected database changes.
+      useEffect(() => {
+        if (!dbInfo.connected) { setSchema({}); setTasks([]); return; }
+        refreshSchema();
+        fetch("/api/tasks")
+          .then(r => r.json())
+          .then(all => setTasks(
+            Array.isArray(all) ? all.filter(t => t.db === dbInfo.name) : []))
+          .catch(() => setTasks([]));
+      }, [dbInfo.connected, dbInfo.name]);
+
+      const connectDb = async (target) => {
+        setDbError(null);
+        try {
+          const res = await fetch("/api/database", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              target.includes("/") || target.includes("\\")
+                ? { path: target } : { name: target }
+            )
+          });
+          const data = await res.json();
+          if (data.connected) { await refreshDb(); setDbPath(""); }
+          else setDbError(data.error || "Could not connect to that database.");
+        } catch (e) {
+          setDbError("Could not reach the server.");
+        }
+      };
+
+      // Starts empty. This used to ship three fabricated charts —
+      // "Sales by Region" at [180500, 135000, ...] and friends — each
+      // stamped "Just now", so the page opened displaying analytics for
+      // data nobody had queried. Charts now appear only when a run
+      // actually produces one.
+      const [dynamicCharts, setDynamicCharts] = useState([]);
 
       // Check if current live record produced a chart
       const extractChartFromRecord = (record) => {
@@ -788,10 +682,24 @@
 
       const activeRecordChart = extractChartFromRecord(liveRecord);
 
+      // Which stage the pipeline bar should highlight.
+      //   0 idle · 1 planning · 2 executing · 3 critic scored it · 4 finished
+      const pipelineStage = (() => {
+        if (isRunning) return liveRecord ? 2 : 1;
+        if (!liveRecord) return 0;
+        if (liveRecord.termination === "critic_stop") return 3;
+        return 4;
+      })();
+
+      // worstCriticScore removed with the live badge it fed. critic_score
+      // is still written to every step by agent/loop.py; it is simply not
+      // shown live, because duration_ms makes it unreliable on a cold start.
+
       // Handle Query Run
       const handleRunQuery = async (customQ = null) => {
         const qToRun = customQ || question;
         setIsRunning(true);
+        setRunError(null);          // clear any previous failure
         try {
           const res = await fetch("/api/run", {
             method: "POST",
@@ -821,17 +729,36 @@
               setSelectedChartIndex(0);
             }
           } else {
-            setLiveRecord(FALLBACK_TRAJECTORIES[0]);
+            // Show what went wrong. This used to substitute a canned
+            // successful run, so a failed query displayed "North America,
+            // total_sales: 180500" as though the agent had produced it —
+            // and it did that precisely when something had gone wrong.
+            setRunError(`Server returned ${res.status}. Check the server log.`);
+            setLiveRecord(null);
           }
         } catch (err) {
-          setLiveRecord(FALLBACK_TRAJECTORIES[0]);
+          setRunError(err.message || "Could not reach the server.");
+          setLiveRecord(null);
         } finally {
           setIsRunning(false);
         }
       };
 
       // Filtered presets
-      const filteredPresets = PRESET_TASKS.filter(p => presetCategory === "ALL" || p.category === presetCategory);
+      // Real questions from data/tasks/task_suite.json, already filtered to
+      // the connected database. Shaped to what the card below expects —
+      // task_suite.json has task_id, question and difficulty, but no title
+      // or category, so the first few words stand in for a title.
+      const filteredPresets = tasks
+        .filter(t => presetCategory === "ALL"
+                  || (t.difficulty || "").toUpperCase() === presetCategory)
+        .slice(0, 40)
+        .map(t => ({
+          task_id: t.task_id,
+          question: t.question,
+          title: t.question.replace(/[?.]$/, "").split(/\s+/).slice(0, 6).join(" "),
+          difficulty: (t.difficulty || "medium").toUpperCase(),
+        }));
 
       return (
         <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${isDark ? 'bg-mesh-dark text-slate-100' : 'bg-mesh-light text-slate-900'}`}>
@@ -922,6 +849,81 @@
                       </span>
                     </div>
 
+                    {/* Connected Dataset — shown until one is chosen.
+                        No dataset means no answers, by design: the backend
+                        refuses to invent data when none is connected. */}
+                    {!dbInfo.connected ? (
+                      <div className={`p-4 rounded-2xl border ${isDark ? 'bg-amber-500/10 border-amber-500/40 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900'}`}>
+                        <div className="flex items-center space-x-2 font-bold text-sm mb-2">
+                          <span>📂</span>
+                          <span>No dataset connected</span>
+                        </div>
+                        <p className="text-xs opacity-80 mb-3">
+                          Choose a database before running a query. Nothing is
+                          connected by default, so results always come from data
+                          you selected.
+                        </p>
+
+                        {dbInfo.available && dbInfo.available.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {dbInfo.available.map((name) => (
+                              <button
+                                key={name}
+                                onClick={() => connectDb(name)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition ${isDark ? 'bg-slate-950/70 border-slate-700 hover:border-amber-400 text-slate-200' : 'bg-white border-slate-300 hover:border-amber-500 text-slate-800'}`}
+                              >
+                                {name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={dbPath}
+                            onChange={(e) => setDbPath(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && dbPath) connectDb(dbPath); }}
+                            placeholder="or a path, e.g. data/uploads/sales.db"
+                            className={`flex-1 px-3 py-2 rounded-lg border text-xs font-mono ${isDark ? 'bg-slate-950/80 border-slate-700 text-slate-100 placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'}`}
+                          />
+                          <button
+                            onClick={() => dbPath && connectDb(dbPath)}
+                            disabled={!dbPath}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${dbPath ? 'bg-amber-500 hover:bg-amber-400 text-slate-900' : 'bg-slate-600 text-slate-400 cursor-not-allowed'}`}
+                          >
+                            Connect
+                          </button>
+                        </div>
+
+                        {dbError && (
+                          <p className="mt-2 text-xs font-mono text-rose-400">{dbError}</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className={`px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs ${isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800'}`}>
+                        <div className="flex items-center space-x-2">
+                          <span>🗄️</span>
+                          <span className="font-bold">Connected:</span>
+                          <span className="font-mono">{dbInfo.name}</span>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            await fetch("/api/database", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({})
+                            });
+                            setDbInfo({ ...dbInfo, connected: false });
+                            refreshDb();
+                          }}
+                          className="opacity-60 hover:opacity-100 font-bold underline"
+                        >
+                          change
+                        </button>
+                      </div>
+                    )}
+
                     {/* Query Input */}
                     <div>
                       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider mb-2 opacity-70">
@@ -957,8 +959,9 @@
                     {/* Execution Action Button */}
                     <button
                       onClick={() => handleRunQuery()}
-                      disabled={isRunning}
-                      className={`w-full py-4 px-6 rounded-2xl font-extrabold text-sm md:text-base text-white shadow-glow-indigo flex items-center justify-center space-x-2.5 btn-lift transition ${isRunning ? 'bg-slate-600 cursor-not-allowed opacity-75' : 'bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-500 hover:to-indigo-500'}`}
+                      disabled={isRunning || !dbInfo.connected}
+                      title={!dbInfo.connected ? "Connect a dataset first" : ""}
+                      className={`w-full py-4 px-6 rounded-2xl font-extrabold text-sm md:text-base text-white shadow-glow-indigo flex items-center justify-center space-x-2.5 btn-lift transition ${(isRunning || !dbInfo.connected) ? 'bg-slate-600 cursor-not-allowed opacity-75' : 'bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-500 hover:to-indigo-500'}`}
                     >
                       {isRunning ? (
                         <>
@@ -982,7 +985,10 @@
                       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider opacity-80">
                         <span>🎯 ENTERPRISE TASK SUITE:</span>
                         <div className="flex items-center space-x-1">
-                          {["ALL", "CHART", "SQL", "STATS"].map(cat => (
+                          {/* Spider tasks carry a difficulty, not a category.
+                              CHART/SQL/STATS matched nothing once these came
+                              from the real task suite. */}
+                          {["ALL", "EASY", "MEDIUM", "HARD"].map(cat => (
                             <button
                               key={cat}
                               onClick={() => setPresetCategory(cat)}
@@ -1030,29 +1036,76 @@
                 {/* Right Panel: Execution Stream (7 Cols) */}
                 <div className="lg:col-span-7 space-y-6">
 
-                  {/* Visual 4-Node Pipeline Bar */}
+                  {/* Pipeline bar — driven by the actual run.
+                      These four were static spans: identical before a run,
+                      during one, and after a failure. They now light up as
+                      the run proceeds, and CRITIC turns red when the critic
+                      is the thing that ended it. */}
                   <div className={`p-4 rounded-2xl border flex items-center justify-between flex-wrap gap-2 text-xs md:text-sm font-mono font-bold ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                     <div className="flex items-center space-x-2 flex-wrap gap-1">
-                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-brand-500/10 text-brand-300 border-brand-500/30' : 'bg-brand-50 text-brand-700 border-brand-200'}`}>
-                        1. PLANNER
-                      </span>
-                      <span className="opacity-40">➔</span>
-                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
-                        2. EXECUTOR
-                      </span>
-                      <span className="opacity-40">➔</span>
-                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200'}`}>
-                        3. CRITIC
-                      </span>
-                      <span className="opacity-40">➔</span>
-                      <span className={`px-3 py-1.5 rounded-xl border ${isDark ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
-                        4. REPLAN / END
+                      {[
+                        { n: 1, label: "PLANNER",     colour: "brand" },
+                        { n: 2, label: "EXECUTOR",    colour: "indigo" },
+                        { n: 3, label: "CRITIC",      colour: "purple" },
+                        { n: 4, label: "REPLAN / END", colour: "emerald" },
+                      ].map((stage, i) => {
+                        const active = stage.n === pipelineStage;
+                        const done = stage.n < pipelineStage;
+                        const stopped = stage.label === "CRITIC"
+                          && liveRecord && liveRecord.termination === "critic_stop";
+                        const cls = stopped
+                          ? "bg-rose-500/20 text-rose-300 border-rose-500/50 ring-2 ring-rose-500/40"
+                          : active
+                            ? `bg-${stage.colour}-500/25 text-${stage.colour}-200 border-${stage.colour}-400 ring-2 ring-${stage.colour}-500/40 animate-pulse`
+                            : done
+                              ? `bg-${stage.colour}-500/10 text-${stage.colour}-300 border-${stage.colour}-500/30`
+                              : (isDark ? "bg-slate-900/40 text-slate-600 border-slate-800"
+                                        : "bg-slate-100 text-slate-400 border-slate-200");
+                        return (
+                          <React.Fragment key={stage.label}>
+                            {i > 0 && <span className="opacity-40">➔</span>}
+                            <span className={`px-3 py-1.5 rounded-xl border transition-all duration-300 ${cls}`}>
+                              {stage.n}. {stage.label}
+                            </span>
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {/* Live critic score removed — see the note on the step
+                          card. It is unreliable on a cold start because
+                          duration_ms is a feature. */}
+                      <span className={`text-xs font-mono font-bold px-3 py-1 rounded-lg border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                        📑 {liveRecord ? liveRecord.steps.length : 0} Steps Logged
                       </span>
                     </div>
-                    <span className={`text-xs font-mono font-bold px-3 py-1 rounded-lg border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
-                      📑 {liveRecord ? liveRecord.steps.length : 0} Steps Logged
-                    </span>
                   </div>
+
+                  {/* A failed run says so. It used to display a canned
+                      successful run instead, which meant the screen looked
+                      most convincing exactly when something had broken. */}
+                  {runError && (
+                    <div className={`p-4 rounded-2xl border ${isDark ? 'bg-rose-500/10 border-rose-500/40 text-rose-100' : 'bg-rose-50 border-rose-300 text-rose-900'}`}>
+                      <div className="flex items-center space-x-2 font-bold text-sm mb-1">
+                        <span>⚠️</span><span>Query failed</span>
+                      </div>
+                      <p className="text-xs font-mono opacity-90">{runError}</p>
+                    </div>
+                  )}
+
+                  {/* Nothing has run yet — say so rather than showing an
+                      empty panel that looks like a result. */}
+                  {!liveRecord && !runError && !isRunning && (
+                    <div className={`p-8 rounded-2xl border border-dashed text-center ${isDark ? 'border-slate-700 text-slate-400' : 'border-slate-300 text-slate-500'}`}>
+                      <div className="text-3xl mb-2 opacity-50">🔍</div>
+                      <p className="text-sm font-bold mb-1">No query run yet</p>
+                      <p className="text-xs opacity-70">
+                        {dbInfo.connected
+                          ? "Ask a question above to see the agent's reasoning trace."
+                          : "Connect a dataset, then ask a question."}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Goal Achieved Executive Banner */}
                   {liveRecord && liveRecord.final_answer && (
@@ -1225,6 +1278,76 @@
             {/* TAB 3: ML BENCHMARKS STUDIO */}
             {activeTab === "benchmarks" && (
               <div className="space-y-8">
+
+                {/* Trajectory critic (layer B). This tab used to show only the
+                    tool classifier and the complexity router, so the trained
+                    model with a measured result behind it was the one model
+                    the interface never mentioned. Figures come from
+                    /api/critic-metrics, which reads the files the notebooks
+                    wrote — not typed in here. */}
+                {criticMetrics && (
+                  <div className={`p-6 rounded-3xl border space-y-5 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div>
+                        <h3 className="font-extrabold text-base md:text-lg">Trajectory Critic (Layer B)</h3>
+                        <p className="text-xs opacity-70 font-medium mt-0.5">
+                          Predicts whether a run will fail, from the step alone — so doomed runs stop early.
+                        </p>
+                      </div>
+                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300">
+                        LightGBM + ModernBERT
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { label: "PR-AUC (test)", value: criticMetrics.test.ensemble_pr_auc.toFixed(4),
+                          sub: `base rate ${criticMetrics.test.base_rate}` },
+                        { label: "Retained on unseen DB", value: (criticMetrics.holdout.retained * 100).toFixed(0) + "%",
+                          sub: criticMetrics.holdout.database },
+                        { label: "Steps saved",
+                          value: criticMetrics.early_stop
+                            ? (criticMetrics.early_stop.steps_saved_pct * 100).toFixed(0) + "%" : "—",
+                          sub: criticMetrics.early_stop
+                            ? `${criticMetrics.early_stop.steps_saved} of ${criticMetrics.early_stop.steps_before}` : "" },
+                        { label: "Answers lost",
+                          value: criticMetrics.early_stop
+                            ? criticMetrics.early_stop.answers_lost : "—",
+                          sub: criticMetrics.early_stop
+                            ? `of ${Math.round(criticMetrics.early_stop.runs * criticMetrics.early_stop.solve_rate_before)} correct` : "" },
+                      ].map(m => (
+                        <div key={m.label} className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                          <div className="text-xs opacity-60 font-bold uppercase tracking-wide mb-1">{m.label}</div>
+                          <div className="text-2xl font-extrabold font-mono text-purple-400">{m.value}</div>
+                          <div className="text-xs opacity-50 font-mono mt-0.5">{m.sub}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className={`p-4 rounded-2xl border text-xs font-mono space-y-1.5 ${isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                      <div className="flex justify-between">
+                        <span className="opacity-70">LightGBM alone (25 numeric features)</span>
+                        <span className="font-bold">{criticMetrics.test.lgbm_pr_auc} · {criticMetrics.test.lgbm_ms} ms/step</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="opacity-70">ModernBERT alone (reads the SQL)</span>
+                        <span className="font-bold">{criticMetrics.test.bert_pr_auc} · {criticMetrics.test.bert_ms} ms/step</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-1.5 mt-1.5" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }}>
+                        <span className="opacity-70">Combined 0.7 / 0.3</span>
+                        <span className="font-bold text-purple-400">{criticMetrics.test.ensemble_pr_auc}</span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs opacity-60 leading-relaxed">
+                      Measured on {criticMetrics.test.steps.toLocaleString()} held-out steps, scored once.
+                      Generalisation checked on <span className="font-mono">{criticMetrics.holdout.database}</span> —
+                      a database, schema and question set the critic had never seen
+                      ({criticMetrics.holdout.runs} runs).
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Tool Classifier */}
                   <div className={`p-6 rounded-3xl border space-y-4 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
@@ -1313,61 +1436,60 @@
             {activeTab === "schema" && (
               <div className="space-y-6">
                 <div className={`p-6 rounded-3xl border ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
-                  <h3 className="font-extrabold text-base md:text-lg mb-1">SQLite Database Relational Schema</h3>
-                  <p className="text-xs md:text-sm opacity-70 font-medium">Relational database tables with Primary Keys (PK) and Foreign Keys (FK).</p>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h3 className="font-extrabold text-base md:text-lg mb-1">Database Schema</h3>
+                      <p className="text-xs md:text-sm opacity-70 font-medium">
+                        Read live from the connected database — the same schema the agent sees in its prompt.
+                      </p>
+                    </div>
+                    {dbInfo.connected && (
+                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                        {dbInfo.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
+                {!dbInfo.connected && (
+                  <div className={`p-8 rounded-3xl border border-dashed text-center ${isDark ? 'border-slate-700 text-slate-400' : 'border-slate-300 text-slate-500'}`}>
+                    <div className="text-3xl mb-2 opacity-50">🗄️</div>
+                    <p className="text-sm font-bold mb-1">No dataset connected</p>
+                    <p className="text-xs opacity-70">Connect a database on the Live Console tab to inspect its schema.</p>
+                  </div>
+                )}
+
+                {dbInfo.connected && schemaError && (
+                  <div className={`p-4 rounded-2xl border ${isDark ? 'bg-rose-500/10 border-rose-500/40 text-rose-100' : 'bg-rose-50 border-rose-300 text-rose-900'}`}>
+                    <p className="text-xs font-mono">{schemaError}</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {["orders", "sales", "customers", "products", "regions"].map((tbl) => (
+                  {Object.entries(schema).map(([tbl, info]) => (
                     <div key={tbl} className={`p-5 rounded-3xl border space-y-3 ${isDark ? 'glass-card-dark shadow-card-dark' : 'glass-card-light shadow-card-light'}`}>
                       <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }}>
-                        <span className="font-mono font-extrabold text-brand-400 text-sm uppercase">{tbl}</span>
-                        <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>TABLE</span>
+                        <span className="font-mono font-extrabold text-brand-400 text-sm">{tbl}</span>
+                        <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                          {(info.columns || []).length} COLS
+                        </span>
                       </div>
-                      <ul className="text-xs md:text-sm space-y-2 font-mono">
-                        {tbl === "orders" && (
-                          <>
-                            <li className="flex items-center justify-between"><span>order_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span>customer_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
-                            <li className="flex items-center justify-between"><span>product_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
-                            <li className="flex items-center justify-between"><span>region</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>sales</span> <span className="text-emerald-400 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span>profit</span> <span className="text-emerald-400 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span>date</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                          </>
-                        )}
-                        {tbl === "customers" && (
-                          <>
-                            <li className="flex items-center justify-between"><span>customer_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span>customer_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>segment</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>region_id</span> <span className="text-indigo-400 font-bold">INT FK</span></li>
-                          </>
-                        )}
-                        {tbl === "products" && (
-                          <>
-                            <li className="flex items-center justify-between"><span>product_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span>product_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>category</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>unit_price</span> <span className="text-emerald-400 font-bold">REAL</span></li>
-                          </>
-                        )}
-                        {tbl === "regions" && (
-                          <>
-                            <li className="flex items-center justify-between"><span>region_id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span>region_name</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>manager</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                          </>
-                        )}
-                        {tbl === "sales" && (
-                          <>
-                            <li className="flex items-center justify-between"><span>id</span> <span className="text-amber-400 font-bold">INT PK</span></li>
-                            <li className="flex items-center justify-between"><span>region</span> <span className="opacity-70 font-bold">TEXT</span></li>
-                            <li className="flex items-center justify-between"><span>sales_amount</span> <span className="text-emerald-400 font-bold">REAL</span></li>
-                            <li className="flex items-center justify-between"><span>year</span> <span className="opacity-70 font-bold">INT</span></li>
-                          </>
-                        )}
+                      <ul className="text-xs md:text-sm space-y-1.5 font-mono">
+                        {(info.columns || []).map((col) => (
+                          <li key={col} className="flex items-center justify-between">
+                            <span className="truncate">{col}</span>
+                          </li>
+                        ))}
                       </ul>
+                      {(info.foreign_keys || []).length > 0 && (
+                        <div className="pt-2 border-t space-y-1" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }}>
+                          {info.foreign_keys.map((fk) => (
+                            <div key={fk} className="text-xs font-mono text-indigo-400 truncate" title={fk}>
+                              FK {fk}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

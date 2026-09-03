@@ -79,6 +79,11 @@ models/critic_bert_*/*
 # is not, and it is the thing that makes a reported number checkable.
 !models/critic_bert_*/meta.json
 
+# --- runtime output --------------------------------------------------
+server.log
+*.log
+data/uploads/
+
 # --- os / editor -----------------------------------------------------
 .DS_Store
 __MACOSX/

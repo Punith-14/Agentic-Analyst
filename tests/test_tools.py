@@ -70,12 +70,25 @@ def test_run_sql_missing_column_hint(test_db):
     assert res.hint is not None
     assert "available columns" in res.hint
 
-def test_get_schema_table_list(test_db):
-    """Test get_schema(table=None) returns list of tables."""
+def test_get_schema_returns_the_whole_schema(test_db):
+    """get_schema(table=None) returns every table WITH its columns.
+
+    Changed from returning bare table names. Measured: with names only the
+    agent had to guess column names and 75% of its queries errored; with the
+    full schema that dropped to 13%. The extra ~500 prompt tokens buy it.
+    """
     res = get_schema(table=None, db_path=test_db)
     assert res.status == "ok"
-    assert "tables" in res.data
-    assert "orders" in res.data["tables"]
+    assert "orders" in res.data
+    assert "columns" in res.data["orders"], "table names alone are not enough"
+    assert "sales" in res.data["orders"]["columns"]
+
+
+def test_get_schema_reports_relationships(test_db):
+    """Foreign keys come back in the no-argument call too — the agent cannot
+    write a correct JOIN without them."""
+    res = get_schema(table=None, db_path=test_db)
+    assert all("foreign_keys" in t for t in res.data.values())
 
 def test_get_schema_specific_table(test_db):
     """Test get_schema(table='orders') returns detailed column definitions."""

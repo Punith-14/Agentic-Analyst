@@ -8,6 +8,8 @@ import sqlite3
 import traceback
 from typing import Dict, Any, List, Optional, Union
 from contracts import ToolResult
+# No default database — see tools/db.py for why.
+from tools.db import no_database, resolve
 
 def calculator(expression: str, **kwargs) -> ToolResult:
     """Safe arithmetic evaluation tool for mathematical formulas and expressions.
@@ -108,7 +110,7 @@ def stats_test(
     col1: Optional[str] = None,
     col2: Optional[str] = None,
     table: Optional[str] = None,
-    db_path: str = "data/db/analytics.db",
+    db_path: str = None,
     **kwargs
 ) -> ToolResult:
     """Statistical hypothesis testing and correlation tool.
@@ -133,6 +135,9 @@ def stats_test(
             sample_b = [float(x) for x in data.get("b", data.get("y", [])) if x is not None]
         elif table and (col1 or col2):
             # Fetch from SQLite database
+            db_path = resolve(db_path)
+            if db_path is None:
+                return no_database("stats_test")
             conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=10.0)
             cursor = conn.cursor()
             if col1:
