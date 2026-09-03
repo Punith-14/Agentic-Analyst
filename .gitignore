@@ -79,6 +79,17 @@ models/critic_bert_*/*
 # is not, and it is the thing that makes a reported number checkable.
 !models/critic_bert_*/meta.json
 
+# --- runtime output --------------------------------------------------
+server.log
+*.log
+data/uploads/
+
+# The complexity router retrains itself at server startup, so this is
+# regenerated output rather than a deliverable. The critic models are
+# committed because they take minutes to train and are pinned to reported
+# numbers; this one takes seconds and isn't.
+models/router_model.joblib
+
 # --- os / editor -----------------------------------------------------
 .DS_Store
 __MACOSX/
